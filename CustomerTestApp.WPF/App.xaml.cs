@@ -1,4 +1,6 @@
-﻿using System.Configuration;
+﻿using CustomerTestApp.WPF.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
+using System.Configuration;
 using System.Data;
 using System.Windows;
 

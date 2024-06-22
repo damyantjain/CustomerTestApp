@@ -1,0 +1,34 @@
+﻿<UserControl x:Class="CustomerTestApp.WPF.Views.CustomerListView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CustomerTestApp.WPF.Views"
+             xmlns:viewModels="clr-namespace:CustomerTestApp.WPF.ViewModels"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.DataContext>
+        <viewModels:CustomerDataViewModel />
+    </UserControl.DataContext>
+    <Grid>
+        <StackPanel>
+            <TextBlock Text="Search"/>
+            <TextBox />
+            <ComboBox Style="{StaticResource ComboboxWithMargin5}">
+                <ComboBoxItem Content="Filter"/>
+            </ComboBox>
+            <ListBox ItemsSource="{Binding CustomerList}"
+                     Style="{StaticResource ListBoxWithMargin5}"
+                     SelectedItem="{Binding SelectedCustomer, Mode=TwoWay}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding FirstName}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <Button Content="Add Customer" Margin="10"/>
+        </StackPanel>
+    </Grid>
+</UserControl>
