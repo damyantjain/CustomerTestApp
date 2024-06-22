@@ -23,6 +23,7 @@ namespace CustomerTestApp.WPF.Views
         public CustomerListView()
         {
             InitializeComponent();
+            DataContext = ViewModelLocator.Instance.CustomerDataViewModel;
         }
     }
 }

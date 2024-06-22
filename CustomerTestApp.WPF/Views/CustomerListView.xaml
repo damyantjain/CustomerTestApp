@@ -7,9 +7,6 @@
              xmlns:viewModels="clr-namespace:CustomerTestApp.WPF.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <UserControl.DataContext>
-        <viewModels:CustomerDataViewModel />
-    </UserControl.DataContext>
     <Grid>
         <StackPanel>
             <TextBlock Text="Search"/>

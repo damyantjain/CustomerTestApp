@@ -20,6 +20,7 @@ namespace CustomerTestApp.WPF
         public MainWindow()
         {
             InitializeComponent();
+            DataContext = ViewModelLocator.Instance.CustomerDataViewModel;
         }
     }
 }
