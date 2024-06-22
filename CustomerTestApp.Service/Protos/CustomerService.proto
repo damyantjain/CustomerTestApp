@@ -1,6 +1,30 @@
-﻿namespace CustomerTestApp.Service.Protos
-{
-    public class CustomerService
-    {
-    }
+﻿syntax = "proto3";
+
+option csharp_namespace = "CustomerTestApp.Service";
+
+package customerService;
+
+message Customer {
+    int32 id = 1;
+    string firstName = 2;
+    string lastName = 3;
+    string email = 4;
+    int32 discount = 5;
+}
+
+message CustomerId {
+    int32 id = 1;
+}
+
+message CustomerList {
+    repeated Customer customers = 1;
+}
+
+message Empty {}
+
+service CustomerManagement {
+    rpc GetAllCustomers (Empty) returns (CustomerList);
+    rpc AddCustomer (Customer) returns (Empty);
+    rpc UpdateCustomer (Customer) returns (Empty);
+    rpc DeleteCustomer (CustomerId) returns (Empty);
 }
