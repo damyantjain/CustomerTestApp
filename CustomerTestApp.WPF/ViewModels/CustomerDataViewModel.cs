@@ -81,32 +81,57 @@ namespace CustomerTestApp.WPF.ViewModels
         /// </summary>
         private void LoadCustomers()
         {
+            //Service call to get all customers.
             CustomerList.Add(new Customer { Id = 1, FirstName = "Damyant", LastName = "Jain", Email = "dj@example.com", Discount = 10 });
             CustomerList.Add(new Customer { Id = 2, FirstName = "Sukriti", LastName = "Gantayet", Email = "sg@example.com", Discount = 15 });
         }
 
         private void SaveCustomer(Customer customer)
         {
-            if (customer.Id == 0)
+            if(customer.Id == 0)
             {
-                //Later we will let Sqlite handle it.
-                customer.Id = CustomerList.Count + 1;
-                CustomerList.Add(customer);
-            }
+                AddNewCustomer(customer);
+            } 
             else
             {
-                //Later will change to a service call to update.
-                var existingCustomer = CustomerList.FirstOrDefault(c => c.Id == customer.Id);
-                if (existingCustomer != null)
-                {
-                    existingCustomer.FirstName = customer.FirstName;
-                    existingCustomer.LastName = customer.LastName;
-                    existingCustomer.Email = customer.Email;
-                    existingCustomer.Discount = customer.Discount;
-                }
+               UpdateCustomer(customer);
             }
-            //Service call to get the latest data.
+            //LoadCustomers();
             SelectedCustomer = null;
+        }
+
+        private void AddNewCustomer(Customer customer)
+        {
+            //Later we will let Sqlite handle it.
+            customer.Id = CustomerList.Any() ? CustomerList.Max(c => c.Id) + 1 : 1;
+            //Service call to add customer.
+        }
+
+        private void UpdateCustomer(Customer customer)
+        {
+            var existingCustomer = CustomerList.FirstOrDefault(c => c.Id == customer.Id);
+            if (existingCustomer != null)
+            {
+                existingCustomer.FirstName = customer.FirstName;
+                existingCustomer.LastName = customer.LastName;
+                existingCustomer.Email = customer.Email;
+                existingCustomer.Discount = customer.Discount;
+            }
+            //Service call to update customer.
+
+            //For now, we will just update the customer in the list.
+            RefreshCustomerList();
+        }
+
+        private void RefreshCustomerList()
+        {
+            var tempList = new ObservableCollection<Customer>(CustomerList);
+            CustomerList.Clear();
+            foreach (var cust in tempList)
+            {
+                CustomerList.Add(cust);
+            }
+            OnPropertyChanged(nameof(CustomerList));
         }
 
         private void RemoveCustomer(Customer customer)
