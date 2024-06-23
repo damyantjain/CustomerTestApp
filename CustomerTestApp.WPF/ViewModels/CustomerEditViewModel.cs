@@ -46,6 +46,7 @@ namespace CustomerTestApp.WPF.ViewModels
             {
                 _editableCustomer = value;
                 OnPropertyChanged(nameof(EditableCustomer));
+                OnPropertyChanged(nameof(IsCustomerSelected));
                 UpdateCustomerProperties();
             }
         }
@@ -142,9 +143,9 @@ namespace CustomerTestApp.WPF.ViewModels
         /// </summary>
         public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
 
-        #endregion
+        public bool IsCustomerSelected => EditableCustomer != null;
 
-        #region Public Methods
+        #endregion
 
         public CustomerEditViewModel()
         {
@@ -156,19 +157,6 @@ namespace CustomerTestApp.WPF.ViewModels
                 EditableCustomer = m.SelectedCustomer?.Clone();
             });
         }
-
-        private void GetValidationHelper_ErrorChanged(object sender, DataErrorsChangedEventArgs e)
-        {
-            ErrorsChanged?.Invoke(this, e);
-            OnPropertyChanged(nameof(CanSave));
-        }
-
-        public IEnumerable GetErrors(string? propertyName)
-        {
-            return _validationHelper.GetErrors(propertyName);
-        }
-
-        #endregion
 
         #region Private Methods
 
@@ -196,9 +184,26 @@ namespace CustomerTestApp.WPF.ViewModels
             }
         }
 
+        private void GetValidationHelper_ErrorChanged(object sender, DataErrorsChangedEventArgs e)
+        {
+            ErrorsChanged?.Invoke(this, e);
+            OnPropertyChanged(nameof(CanSave));
+        }
+
         #endregion
 
         #region Public Methods
+
+        /// <summary>
+        /// Returns a list of errors based on a property.
+        /// </summary>
+        /// <param name="propertyName">Property for which the errors are to be fetched.</param>
+        /// <returns>list of errors based on the propertyName</returns>
+
+        public IEnumerable GetErrors(string? propertyName)
+        {
+            return _validationHelper.GetErrors(propertyName);
+        }
 
         #endregion
     }
