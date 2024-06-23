@@ -104,6 +104,7 @@ namespace CustomerTestApp.WPF.ViewModels
         {
             //Later we will let Sqlite handle it.
             customer.Id = CustomerList.Any() ? CustomerList.Max(c => c.Id) + 1 : 1;
+            CustomerList.Add(customer);
             //Service call to add customer.
         }
 
