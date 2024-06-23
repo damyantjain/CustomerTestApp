@@ -46,7 +46,10 @@ namespace CustomerTestApp.WPF.ViewModels
             {
                 _selectedCustomer = value;
                 OnPropertyChanged(nameof(SelectedCustomer));
-                WeakReferenceMessenger.Default.Send(new SelectedCustomerChangedMessage(_selectedCustomer));
+                if(_selectedCustomer != null)
+                {
+                    WeakReferenceMessenger.Default.Send(new SelectedCustomerChangedMessage(_selectedCustomer));
+                }
             }
         }
 

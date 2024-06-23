@@ -29,5 +29,14 @@
         /// The discount of the customer.
         /// </summary>
         public int Discount { get; set; }
+
+        /// <summary>
+        /// The customer's shallow clone method.
+        /// </summary>
+        /// <returns>A shallow clone of customer's object</returns>
+        public Customer Clone()
+        {
+            return (Customer)this.MemberwiseClone();
+        }
     }
 }

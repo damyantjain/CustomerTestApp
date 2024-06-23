@@ -10,15 +10,15 @@
     <Grid>
         <StackPanel Margin="10">
             <TextBlock Text="Customer ID:"/>
-            <TextBox Text="{Binding SelectedCustomer.Id}" IsReadOnly="True"/>
+            <TextBox Text="{Binding EditableCustomer.Id}" IsReadOnly="True"/>
             <TextBlock Text="First Name:"/>
-            <TextBox Text="{Binding SelectedCustomer.FirstName, Mode=TwoWay}"/>
+            <TextBox Text="{Binding EditableCustomer.FirstName, Mode=TwoWay}"/>
             <TextBlock Text="Last Name:"/>
-            <TextBox Text="{Binding SelectedCustomer.LastName, Mode=TwoWay}"/>
+            <TextBox Text="{Binding EditableCustomer.LastName, Mode=TwoWay}"/>
             <TextBlock Text="Email:"/>
-            <TextBox Text="{Binding SelectedCustomer.Email, Mode=TwoWay}" />
+            <TextBox Text="{Binding EditableCustomer.Email, Mode=TwoWay}" />
             <TextBlock Text="Discount:"/>
-            <TextBox Text="{Binding SelectedCustomer.Discount, Mode=TwoWay}" />
+            <TextBox Text="{Binding EditableCustomer.Discount, Mode=TwoWay}" />
             <Button Content="Save" Command="{Binding SaveCustomerCommand}" Margin="10"/>
         </StackPanel>
     </Grid>

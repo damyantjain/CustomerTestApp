@@ -12,7 +12,7 @@ namespace CustomerTestApp.WPF.ViewModels
     {
         #region Private Members
 
-        private Customer _selectedCustomer;
+        private Customer _editableCustomer;
 
         #endregion
 
@@ -26,13 +26,13 @@ namespace CustomerTestApp.WPF.ViewModels
         /// <summary>
         /// The Selected Customer
         /// </summary>
-        public Customer SelectedCustomer
+        public Customer EditableCustomer
         {
-            get => _selectedCustomer;
+            get => _editableCustomer;
             set
             {
-                _selectedCustomer = value;
-                OnPropertyChanged(nameof(SelectedCustomer));
+                _editableCustomer = value;
+                OnPropertyChanged(nameof(EditableCustomer));
             }
         }
 
@@ -48,7 +48,7 @@ namespace CustomerTestApp.WPF.ViewModels
             SaveCustomerCommand = new RelayCommand(SaveCustomer);
             WeakReferenceMessenger.Default.Register<SelectedCustomerChangedMessage>(this, (r, m) =>
             {
-                SelectedCustomer = m.SelectedCustomer;
+                EditableCustomer = m.SelectedCustomer.Clone();
             });
         }
 
@@ -58,9 +58,9 @@ namespace CustomerTestApp.WPF.ViewModels
 
         private void SaveCustomer()
         {
-            if (SelectedCustomer != null)
+            if (EditableCustomer != null)
             {
-                WeakReferenceMessenger.Default.Send(new SaveCustomerMessage(SelectedCustomer));
+                WeakReferenceMessenger.Default.Send(new SaveCustomerMessage(EditableCustomer));
             }
         }
 
