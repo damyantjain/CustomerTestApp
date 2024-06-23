@@ -8,7 +8,7 @@
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <StackPanel Margin="10">
+        <StackPanel Margin="10" Visibility="{Binding IsCustomerSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
             <TextBlock Text="Customer ID:"/>
             <TextBox Text="{Binding Id, Mode=OneWay}" IsReadOnly="True"/>
             <TextBlock Text="First Name:"/>

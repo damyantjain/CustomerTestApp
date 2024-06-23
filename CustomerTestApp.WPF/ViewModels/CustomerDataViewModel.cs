@@ -46,10 +46,7 @@ namespace CustomerTestApp.WPF.ViewModels
             {
                 _selectedCustomer = value;
                 OnPropertyChanged(nameof(SelectedCustomer));
-                if(_selectedCustomer != null)
-                {
-                    WeakReferenceMessenger.Default.Send(new SelectedCustomerChangedMessage(_selectedCustomer));
-                }
+                WeakReferenceMessenger.Default.Send(new SelectedCustomerChangedMessage(_selectedCustomer));
             }
         }
 
@@ -109,13 +106,14 @@ namespace CustomerTestApp.WPF.ViewModels
                 }
             }
             //Service call to get the latest data.
-
+            SelectedCustomer = null;
         }
 
         private void RemoveCustomer(Customer customer)
         {
             if (customer != null)
             {
+                SelectedCustomer = null;
                 //Need to add a service call to delete the customer.
                 CustomerList.Remove(customer);
             }
