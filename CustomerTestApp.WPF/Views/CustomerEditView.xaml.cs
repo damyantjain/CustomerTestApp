@@ -23,6 +23,7 @@ namespace CustomerTestApp.WPF.Views
         public CustomerEditView()
         {
             InitializeComponent();
+            DataContext = ViewModelLocator.Instance.CustomerEditViewModel;
         }
     }
 }
