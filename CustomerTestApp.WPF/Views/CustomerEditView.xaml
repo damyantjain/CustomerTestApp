@@ -12,7 +12,7 @@
             <TextBlock Text="Customer ID:"/>
             <TextBox Text="{Binding SelectedCustomer.Id}" IsReadOnly="True"/>
             <TextBlock Text="First Name:"/>
-            <TextBox Text="{Binding SelectedCustomer.FirstName, Mode=TwoWay}"/>
+            <TextBox Text="{Binding FirstName, Mode=TwoWay}"/>
             <TextBlock Text="Last Name:"/>
             <TextBox Text="{Binding SelectedCustomer.LastName, Mode=TwoWay}"/>
             <TextBlock Text="Email:"/>

@@ -3,6 +3,7 @@ using CustomerTestApp.WPF.Models;
 using System.Collections.ObjectModel;
 using CustomerTestApp.WPF.Messages;
 using CommunityToolkit.Mvvm.Input;
+using System.Xml.Linq;
 
 namespace CustomerTestApp.WPF.ViewModels
 {
@@ -16,15 +17,29 @@ namespace CustomerTestApp.WPF.ViewModels
 
         private Customer _selectedCustomer;
 
+        private string firstName;
+
         #endregion
 
 
         #region Public Properties
 
+        public string FirstName
+        {
+            get => firstName;
+            set
+            {
+                firstName = value;
+                OnPropertyChanged(nameof(FirstName));
+            }
+        }
+
         /// <summary>
         /// The New Customer Command prepares to create a new customer.
         /// </summary>
         public IRelayCommand NewCustomerCommand { get; }
+
+        public IRelayCommand SaveCustomerCommand { get; }
 
         /// <summary>
         /// The Remove Customer Command removes a customer from the list.
@@ -45,12 +60,20 @@ namespace CustomerTestApp.WPF.ViewModels
             set
             {
                 _selectedCustomer = value;
+                if (_selectedCustomer != null)
+                {
+                    FirstName = _selectedCustomer.FirstName;
+                }
                 OnPropertyChanged(nameof(SelectedCustomer));
-                WeakReferenceMessenger.Default.Send(new SelectedCustomerChangedMessage(_selectedCustomer));
             }
         }
 
         #endregion
+
+        private void UpdateFirstName()
+        {
+            FirstName = SelectedCustomer?.FirstName;
+        }
 
         /// <summary>
         /// The Customer Data View Model constructor initializes the customer list.
@@ -59,12 +82,9 @@ namespace CustomerTestApp.WPF.ViewModels
         {
             CustomerList = new ObservableCollection<Customer>();
             LoadCustomers();
+            SaveCustomerCommand = new RelayCommand(SaveCustomer);
             NewCustomerCommand = new RelayCommand(CreateNewCustomer);
             RemoveCustomerCommand = new RelayCommand<Customer>(RemoveCustomer);
-            WeakReferenceMessenger.Default.Register<SaveCustomerMessage>(this, (r, m) =>
-            {
-                SaveCustomer(m.Customer);
-            });
         }
 
 
@@ -85,28 +105,19 @@ namespace CustomerTestApp.WPF.ViewModels
             CustomerList.Add(new Customer { Id = 2, FirstName = "Sukriti", LastName = "Gantayet", Email = "sg@example.com", Discount = 15 });
         }
 
-        private void SaveCustomer(Customer customer)
+        private void SaveCustomer()
         {
-            if (customer.Id == 0)
+            if (SelectedCustomer != null)
             {
-                //Later we will let Sqlite handle it.
-                customer.Id = CustomerList.Count + 1;
-                CustomerList.Add(customer);
-            }
-            else
-            {
-                //Later will change to a service call to update.
-                var existingCustomer = CustomerList.FirstOrDefault(c => c.Id == customer.Id);
-                if (existingCustomer != null)
-                {
-                    existingCustomer.FirstName = customer.FirstName;
-                    existingCustomer.LastName = customer.LastName;
-                    existingCustomer.Email = customer.Email;
-                    existingCustomer.Discount = customer.Discount;
-                }
-            }
-            //Service call to get the latest data.
+                // Update the specific properties of the selected customer
+                SelectedCustomer.FirstName = FirstName;
 
+                // Notify the UI about the update
+                OnPropertyChanged(nameof(SelectedCustomer));
+
+                // Optional: If you need to update the entire list (not usually needed for a single property update)
+                 OnPropertyChanged(nameof(CustomerList));
+            }
         }
 
         private void RemoveCustomer(Customer customer)
