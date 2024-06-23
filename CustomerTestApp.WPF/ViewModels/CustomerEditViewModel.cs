@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.Messaging;
+﻿using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using CustomerTestApp.WPF.Messages;
 using CustomerTestApp.WPF.Models;
 
@@ -18,6 +19,11 @@ namespace CustomerTestApp.WPF.ViewModels
         #region Public Properties
 
         /// <summary>
+        /// The save customer command saves the selected customer.
+        /// </summary>
+        public IRelayCommand SaveCustomerCommand { get; }
+
+        /// <summary>
         /// The Selected Customer
         /// </summary>
         public Customer SelectedCustomer
@@ -32,15 +38,32 @@ namespace CustomerTestApp.WPF.ViewModels
 
         #endregion
 
+        #region Public Methods
+
         /// <summary>
         /// The CustomerEditViewModel constructor register the Messenger.
         /// </summary>
         public CustomerEditViewModel()
         {
+            SaveCustomerCommand = new RelayCommand(SaveCustomer);
             WeakReferenceMessenger.Default.Register<SelectedCustomerChangedMessage>(this, (r, m) =>
             {
                 SelectedCustomer = m.SelectedCustomer;
             });
         }
+
+        #endregion
+
+        #region Private Methods
+
+        private void SaveCustomer()
+        {
+            if (SelectedCustomer != null)
+            {
+                WeakReferenceMessenger.Default.Send(new SaveCustomerMessage(SelectedCustomer));
+            }
+        }
+
+        #endregion
     }
 }

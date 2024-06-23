@@ -20,12 +20,19 @@
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding FirstName}"/>
+                            <TextBlock Text="{Binding FirstName}" Margin="0,0,10,0"/>
+                            <TextBlock Text="{Binding LastName}" Margin="0,0,10,0"/>
+                            <TextBlock Text="{Binding Email}" Margin="0,0,10,0"/>
+                            <TextBlock Text="{Binding Discount}" Margin="0,0,10,0"/>
+                            <Button Content="Remove" 
+                                        Command="{Binding DataContext.RemoveCustomerCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                        CommandParameter="{Binding}" 
+                                        Margin="10,0,0,0"/>
                         </StackPanel>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-            <Button Content="Add Customer" Margin="10"/>
+            <Button Content="New Customer" Command="{Binding NewCustomerCommand}" Margin="10"/>
         </StackPanel>
     </Grid>
 </UserControl>

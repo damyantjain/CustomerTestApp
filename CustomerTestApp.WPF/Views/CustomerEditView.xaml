@@ -19,7 +19,7 @@
             <TextBox Text="{Binding SelectedCustomer.Email, Mode=TwoWay}" />
             <TextBlock Text="Discount:"/>
             <TextBox Text="{Binding SelectedCustomer.Discount, Mode=TwoWay}" />
-            <Button Content="Save" Margin="10"/>
+            <Button Content="Save" Command="{Binding SaveCustomerCommand}" Margin="10"/>
         </StackPanel>
     </Grid>
 </UserControl>
