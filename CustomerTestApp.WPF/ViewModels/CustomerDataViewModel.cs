@@ -227,20 +227,26 @@ namespace CustomerTestApp.WPF.ViewModels
 
         private IEnumerable<Customer> FilterByName()
         {
-            return CustomerList.Where(c => c.FirstName.Contains(SearchText, StringComparison.OrdinalIgnoreCase) 
-            || c.LastName.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
+            return CustomerList.Where(x =>
+            {
+                var fullName = $"{x.FirstName} {x.LastName}";
+                return fullName.Contains(SearchText, StringComparison.OrdinalIgnoreCase);
+            });
         }
 
         private IEnumerable<Customer> FilterByEmail()
         {
-            return CustomerList.Where(c => c.Email.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
+            return CustomerList.Where(x => x.Email.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
         }
 
         private IEnumerable<Customer> FilterAll()
         {
-            return CustomerList.Where(c => c.FirstName.Contains(SearchText, StringComparison.OrdinalIgnoreCase) 
-            || c.LastName.Contains(SearchText, StringComparison.OrdinalIgnoreCase) 
-            || c.Email.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
+            return CustomerList.Where(x =>
+            {
+                var fullName = $"{x.FirstName} {x.LastName}";
+                return fullName.Contains(SearchText, StringComparison.OrdinalIgnoreCase)
+                || x.Email.Contains(SearchText, StringComparison.OrdinalIgnoreCase);
+            });
         }
 
         #endregion
