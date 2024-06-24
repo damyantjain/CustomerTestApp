@@ -3,6 +3,7 @@ using CustomerTestApp.WPF.Models;
 using System.Collections.ObjectModel;
 using CustomerTestApp.WPF.Messages;
 using CommunityToolkit.Mvvm.Input;
+using System.Windows;
 
 namespace CustomerTestApp.WPF.ViewModels
 {
@@ -190,10 +191,14 @@ namespace CustomerTestApp.WPF.ViewModels
         {
             if (customer != null)
             {
-                SelectedCustomer = null;
-                //Need to add a service call to delete the customer.
-                CustomerList.Remove(customer);
-                ApplyFilter();
+                var result = MessageBox.Show($"Are you sure you want to delete {customer.FirstName} {customer.LastName}?", "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                if (result == MessageBoxResult.Yes)
+                {
+                    SelectedCustomer = null;
+                    //Need to add a service call to delete the customer.
+                    CustomerList.Remove(customer);
+                    ApplyFilter();
+                }
             }
         }
 
