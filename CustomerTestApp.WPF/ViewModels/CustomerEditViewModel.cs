@@ -161,6 +161,7 @@ namespace CustomerTestApp.WPF.ViewModels
         {
             if (EditableCustomer != null)
             {
+                OnPropertyChanged(nameof(Id));
                 FirstName = EditableCustomer.FirstName;
                 LastName = EditableCustomer.LastName;
                 Email = EditableCustomer.Email;
