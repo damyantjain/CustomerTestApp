@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CustomerTestApp.WPF.Views"
+             xmlns:enum="clr-namespace:CustomerTestApp.WPF.Models"
              xmlns:viewModels="clr-namespace:CustomerTestApp.WPF.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -16,11 +17,13 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <TextBlock Grid.Row="0" Text="Search"/>
-        <TextBox Grid.Row="1" />
-        <ComboBox Grid.Row="2" Style="{StaticResource ComboboxWithMargin5}">
-                <ComboBoxItem Content="Filter"/>
-            </ComboBox>
-        <ListBox ItemsSource="{Binding CustomerList}" Grid.Row="3"
+        <TextBox Grid.Row="1" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" />
+        <ComboBox Grid.Row="2" SelectedValuePath="Tag" SelectedValue="{Binding SelectedFilter}" Style="{StaticResource ComboboxWithMargin5}">
+            <ComboBoxItem Content="All" Tag="{x:Static enum:FilterType.All}" />
+            <ComboBoxItem Content="Filter by Name" Tag="{x:Static enum:FilterType.Name}" />
+            <ComboBoxItem Content="Filter by Email" Tag="{x:Static enum:FilterType.Email}" />
+        </ComboBox>
+        <ListBox ItemsSource="{Binding FilteredCustomerList}" Grid.Row="3"
                      Style="{StaticResource ListBoxWithMargin5}" HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch"
                      SelectedItem="{Binding SelectedCustomer, Mode=TwoWay}">
             <ListBox.ItemTemplate>

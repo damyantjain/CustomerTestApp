@@ -16,6 +16,12 @@ namespace CustomerTestApp.WPF.ViewModels
 
         private Customer _selectedCustomer;
 
+        private string _searchText;
+
+        private FilterType _selectedFilter;
+
+        private ObservableCollection<Customer> _filteredCustomerList;
+
         #endregion
 
 
@@ -50,6 +56,47 @@ namespace CustomerTestApp.WPF.ViewModels
             }
         }
 
+        /// <summary>
+        /// The filtered customer list.
+        /// </summary>
+        public ObservableCollection<Customer> FilteredCustomerList
+        {
+            get => _filteredCustomerList;
+            set
+            {
+                _filteredCustomerList = value; 
+                OnPropertyChanged(nameof(FilteredCustomerList));
+            }
+        }
+
+        /// <summary>
+        /// The search text for filtering customers.
+        /// </summary>
+        public string SearchText
+        {
+            get => _searchText;
+            set
+            {
+                _searchText = value;
+                OnPropertyChanged(nameof(SearchText));
+                ApplyFilter();
+            }
+        }
+
+        /// <summary>
+        /// The selected filter for filtering customers.
+        /// </summary>
+        public FilterType SelectedFilter
+        {
+            get => _selectedFilter;
+            set
+            {
+                _selectedFilter = value;
+                OnPropertyChanged(nameof(SelectedFilter));
+                ApplyFilter();
+            }
+        }
+
         #endregion
 
         /// <summary>
@@ -58,6 +105,7 @@ namespace CustomerTestApp.WPF.ViewModels
         public CustomerDataViewModel() 
         {
             CustomerList = new ObservableCollection<Customer>();
+            FilteredCustomerList = new ObservableCollection<Customer>();
             LoadCustomers();
             NewCustomerCommand = new RelayCommand(CreateNewCustomer);
             RemoveCustomerCommand = new RelayCommand<Customer>(RemoveCustomer);
@@ -66,7 +114,6 @@ namespace CustomerTestApp.WPF.ViewModels
                 SaveCustomer(m.Customer);
             });
         }
-
 
         #region Private Methods
 
@@ -84,6 +131,7 @@ namespace CustomerTestApp.WPF.ViewModels
             //Service call to get all customers.
             CustomerList.Add(new Customer { Id = 1, FirstName = "Damyant", LastName = "Jain", Email = "dj@example.com", Discount = 10 });
             CustomerList.Add(new Customer { Id = 2, FirstName = "Sukriti", LastName = "Gantayet", Email = "sg@example.com", Discount = 15 });
+            ApplyFilter();
         }
 
         private void SaveCustomer(Customer customer)
@@ -105,6 +153,7 @@ namespace CustomerTestApp.WPF.ViewModels
             //Later we will let Sqlite handle it.
             customer.Id = CustomerList.Any() ? CustomerList.Max(c => c.Id) + 1 : 1;
             CustomerList.Add(customer);
+            ApplyFilter();
             //Service call to add customer.
         }
 
@@ -121,7 +170,8 @@ namespace CustomerTestApp.WPF.ViewModels
             //Service call to update customer.
 
             //For now, we will just update the customer in the list.
-            RefreshCustomerList();
+            RefreshCustomerList(); 
+            ApplyFilter();
         }
 
         private void RefreshCustomerList()
@@ -142,7 +192,49 @@ namespace CustomerTestApp.WPF.ViewModels
                 SelectedCustomer = null;
                 //Need to add a service call to delete the customer.
                 CustomerList.Remove(customer);
+                ApplyFilter();
             }
+        }
+
+        private void ApplyFilter()
+        {
+            if (string.IsNullOrEmpty(SearchText))
+            { 
+                FilteredCustomerList = new ObservableCollection<Customer>(CustomerList);
+                return;
+            }
+            var filteredCustomers = CustomerList.AsEnumerable();
+            switch (SelectedFilter)
+            {
+                case FilterType.Name:
+                    filteredCustomers = FilterByName();
+                    break;
+                case FilterType.Email:
+                    filteredCustomers = FilterByEmail();
+                    break;
+                case FilterType.All:
+                    filteredCustomers = FilterAll();
+                    break;
+            }
+            FilteredCustomerList = new ObservableCollection<Customer>(filteredCustomers);
+        }
+
+        private IEnumerable<Customer> FilterByName()
+        {
+            return CustomerList.Where(c => c.FirstName.Contains(SearchText, StringComparison.OrdinalIgnoreCase) 
+            || c.LastName.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
+        }
+
+        private IEnumerable<Customer> FilterByEmail()
+        {
+            return CustomerList.Where(c => c.Email.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
+        }
+
+        private IEnumerable<Customer> FilterAll()
+        {
+            return CustomerList.Where(c => c.FirstName.Contains(SearchText, StringComparison.OrdinalIgnoreCase) 
+            || c.LastName.Contains(SearchText, StringComparison.OrdinalIgnoreCase) 
+            || c.Email.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
         }
 
         #endregion
