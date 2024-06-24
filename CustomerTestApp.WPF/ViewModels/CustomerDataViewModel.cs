@@ -3,6 +3,7 @@ using CustomerTestApp.WPF.Models;
 using System.Collections.ObjectModel;
 using CustomerTestApp.WPF.Messages;
 using CommunityToolkit.Mvvm.Input;
+using System.Windows;
 
 namespace CustomerTestApp.WPF.ViewModels
 {
@@ -129,8 +130,8 @@ namespace CustomerTestApp.WPF.ViewModels
         private void LoadCustomers()
         {
             //Service call to get all customers.
-            CustomerList.Add(new Customer { Id = 1, FirstName = "Damyant", LastName = "Jain", Email = "dj@example.com", Discount = 10 });
-            CustomerList.Add(new Customer { Id = 2, FirstName = "Sukriti", LastName = "Gantayet", Email = "sg@example.com", Discount = 15 });
+            CustomerList.Add(new Customer { Id = 1, FirstName = "Damyant", LastName = "Jain", Email = "dj@example.com", CanBeRemoved = false, Discount = 10 });
+            CustomerList.Add(new Customer { Id = 2, FirstName = "Sukriti", LastName = "Gantayet", Email = "sg@example.com", CanBeRemoved = false, Discount = 15 });
             ApplyFilter();
         }
 
@@ -152,6 +153,7 @@ namespace CustomerTestApp.WPF.ViewModels
         {
             //Later we will let Sqlite handle it.
             customer.Id = CustomerList.Any() ? CustomerList.Max(c => c.Id) + 1 : 1;
+            customer.CanBeRemoved = true;
             CustomerList.Add(customer);
             ApplyFilter();
             //Service call to add customer.
@@ -189,10 +191,14 @@ namespace CustomerTestApp.WPF.ViewModels
         {
             if (customer != null)
             {
-                SelectedCustomer = null;
-                //Need to add a service call to delete the customer.
-                CustomerList.Remove(customer);
-                ApplyFilter();
+                var result = MessageBox.Show($"Are you sure you want to delete {customer.FirstName} {customer.LastName}?", "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                if (result == MessageBoxResult.Yes)
+                {
+                    SelectedCustomer = null;
+                    //Need to add a service call to delete the customer.
+                    CustomerList.Remove(customer);
+                    ApplyFilter();
+                }
             }
         }
 

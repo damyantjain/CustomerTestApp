@@ -59,7 +59,8 @@
                                         Background="LightPink"
                                         Margin="0"
                                         Command="{Binding DataContext.RemoveCustomerCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
-                                        CommandParameter="{Binding}">
+                                        CommandParameter="{Binding}"
+                                        IsEnabled="{Binding CanBeRemoved}">
                                 <StackPanel>
                                     <TextBlock Margin="0" Padding="0" Text="Delete"/>
                                 </StackPanel>
