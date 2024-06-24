@@ -25,7 +25,7 @@ namespace CustomerTestApp.WPF.ViewModels
 
         private string _email;
 
-        private int _discount;
+        private string _discount;
 
         #endregion
 
@@ -65,11 +65,7 @@ namespace CustomerTestApp.WPF.ViewModels
             set
             {
                 _firstName = value;
-                _validationHelper.ClearErrors(nameof(FirstName));
-                if (string.IsNullOrWhiteSpace(_firstName))
-                {
-                    _validationHelper.AddError(nameof(FirstName), "First Name is required");
-                }
+                ValidateFirstName();
                 OnPropertyChanged(nameof(FirstName));
             }
         }
@@ -83,11 +79,7 @@ namespace CustomerTestApp.WPF.ViewModels
             set
             {
                 _lastName = value;
-                _validationHelper.ClearErrors(nameof(LastName));
-                if (string.IsNullOrWhiteSpace(_lastName))
-                {
-                    _validationHelper.AddError(nameof(LastName), "Last Name is required");
-                }
+                ValidateLastName();
                 OnPropertyChanged(nameof(LastName));
             }
         }
@@ -101,11 +93,7 @@ namespace CustomerTestApp.WPF.ViewModels
             set
             {
                 _email = value;
-                _validationHelper.ClearErrors(nameof(Email));
-                if (string.IsNullOrWhiteSpace(_email))
-                {
-                    _validationHelper.AddError(nameof(Email), "Email is required");
-                }
+                ValidateEmail();
                 OnPropertyChanged(nameof(Email));
             }
         }
@@ -113,17 +101,13 @@ namespace CustomerTestApp.WPF.ViewModels
         /// <summary>
         /// The discount of the customer.
         /// </summary>
-        public int Discount
+        public string Discount
         {
             get => _discount;
             set
             {
                 _discount = value;
-                _validationHelper.ClearErrors(nameof(Discount));
-                if (_discount < 0m || _discount > 30m)
-                {
-                    _validationHelper.AddError(nameof(Discount), "Discount must be between 0 and 30");
-                }
+                ValidateDiscount();
                 OnPropertyChanged(nameof(Discount));
             }
         }
@@ -167,7 +151,7 @@ namespace CustomerTestApp.WPF.ViewModels
                 EditableCustomer.FirstName = FirstName;
                 EditableCustomer.LastName = LastName;
                 EditableCustomer.Email = Email;
-                EditableCustomer.Discount = Discount;
+                EditableCustomer.Discount = int.TryParse(Discount, out var discount) ? discount : 0;
 
                 WeakReferenceMessenger.Default.Send(new SaveCustomerMessage(EditableCustomer));
             }
@@ -180,7 +164,7 @@ namespace CustomerTestApp.WPF.ViewModels
                 FirstName = EditableCustomer.FirstName;
                 LastName = EditableCustomer.LastName;
                 Email = EditableCustomer.Email;
-                Discount = EditableCustomer.Discount;
+                Discount = EditableCustomer.Discount.ToString();
             }
         }
 
@@ -188,6 +172,42 @@ namespace CustomerTestApp.WPF.ViewModels
         {
             ErrorsChanged?.Invoke(this, e);
             OnPropertyChanged(nameof(CanSave));
+        }
+
+        private void ValidateFirstName()
+        {
+            _validationHelper.ClearErrors(nameof(FirstName));
+            if (string.IsNullOrWhiteSpace(FirstName))
+            {
+                _validationHelper.AddError(nameof(FirstName), "First Name is required.");
+            }
+        }
+
+        private void ValidateLastName()
+        {
+            _validationHelper.ClearErrors(nameof(LastName));
+            if (string.IsNullOrWhiteSpace(LastName))
+            {
+                _validationHelper.AddError(nameof(LastName), "Last Name is required.");
+            }
+        }
+
+        private void ValidateEmail()
+        {
+            _validationHelper.ClearErrors(nameof(Email));
+            if (string.IsNullOrWhiteSpace(Email))
+            {
+                _validationHelper.AddError(nameof(Email), "Email is required.");
+            }
+        }
+
+        private void ValidateDiscount()
+        {
+            _validationHelper.ClearErrors(nameof(Discount));
+            if(string.IsNullOrEmpty(Discount) || !int.TryParse(Discount, out var discountValue) || discountValue < 0 || discountValue > 30)
+            {
+                _validationHelper.AddError(nameof(Discount), "Discount must be between 0 and 30.");
+            }
         }
 
         #endregion

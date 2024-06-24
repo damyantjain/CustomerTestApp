@@ -19,7 +19,7 @@
             <TextBox Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" />
             <TextBlock Text="Discount:"/>
             <TextBox Text="{Binding Discount, UpdateSourceTrigger=PropertyChanged}" />
-            
+
             <Button Content="Save" Background="YellowGreen" Command="{Binding SaveCustomerCommand}" IsEnabled="{Binding CanSave}" Margin="10"/>
         </StackPanel>
     </Grid>
