@@ -129,8 +129,8 @@ namespace CustomerTestApp.WPF.ViewModels
         private void LoadCustomers()
         {
             //Service call to get all customers.
-            CustomerList.Add(new Customer { Id = 1, FirstName = "Damyant", LastName = "Jain", Email = "dj@example.com", Discount = 10 });
-            CustomerList.Add(new Customer { Id = 2, FirstName = "Sukriti", LastName = "Gantayet", Email = "sg@example.com", Discount = 15 });
+            CustomerList.Add(new Customer { Id = 1, FirstName = "Damyant", LastName = "Jain", Email = "dj@example.com", CanBeRemoved = false, Discount = 10 });
+            CustomerList.Add(new Customer { Id = 2, FirstName = "Sukriti", LastName = "Gantayet", Email = "sg@example.com", CanBeRemoved = false, Discount = 15 });
             ApplyFilter();
         }
 
@@ -152,6 +152,7 @@ namespace CustomerTestApp.WPF.ViewModels
         {
             //Later we will let Sqlite handle it.
             customer.Id = CustomerList.Any() ? CustomerList.Max(c => c.Id) + 1 : 1;
+            customer.CanBeRemoved = true;
             CustomerList.Add(customer);
             ApplyFilter();
             //Service call to add customer.

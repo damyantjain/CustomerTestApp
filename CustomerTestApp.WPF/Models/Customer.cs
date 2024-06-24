@@ -31,6 +31,11 @@
         public int Discount { get; set; }
 
         /// <summary>
+        /// The customer's deletion status.
+        /// </summary>
+        public bool CanBeRemoved { get; set; }
+
+        /// <summary>
         /// The customer's shallow clone method.
         /// </summary>
         /// <returns>A shallow clone of customer's object</returns>
