@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.Mvvm.Messaging;
-using CustomerTestApp.WPF.Helpers;
+using CustomerTestApp.WPF.Helpers.Messenger;
+using CustomerTestApp.WPF.Helpers.Validation;
 using CustomerTestApp.WPF.Messages;
 using CustomerTestApp.WPF.Models;
 using System.Collections;
@@ -136,10 +136,7 @@ namespace CustomerTestApp.WPF.ViewModels
             SaveCustomerCommand = new RelayCommand(SaveCustomer);
             _validationHelper = new ValidationHelper();
             _validationHelper.ErrorsChanged += GetValidationHelper_ErrorChanged;
-            WeakReferenceMessenger.Default.Register<SelectedCustomerChangedMessage>(this, (r, m) =>
-            {
-                EditableCustomer = m.SelectedCustomer?.Clone();
-            });
+            Messenger.Instance.Register<SelectedCustomerChangedMessage>((m) => EditableCustomer = m.SelectedCustomer?.Clone());
         }
 
         #region Private Methods
@@ -152,8 +149,7 @@ namespace CustomerTestApp.WPF.ViewModels
                 EditableCustomer.LastName = LastName;
                 EditableCustomer.Email = Email;
                 EditableCustomer.Discount = int.TryParse(Discount, out var discount) ? discount : 0;
-
-                WeakReferenceMessenger.Default.Send(new SaveCustomerMessage(EditableCustomer));
+                Messenger.Instance.Send(new SaveCustomerMessage(EditableCustomer));
             }
         }
 

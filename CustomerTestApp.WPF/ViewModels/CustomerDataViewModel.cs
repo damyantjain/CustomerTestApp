@@ -1,9 +1,9 @@
-﻿using CommunityToolkit.Mvvm.Messaging;
-using CustomerTestApp.WPF.Models;
+﻿using CustomerTestApp.WPF.Models;
 using System.Collections.ObjectModel;
 using CustomerTestApp.WPF.Messages;
 using CommunityToolkit.Mvvm.Input;
 using System.Windows;
+using CustomerTestApp.WPF.Helpers.Messenger;
 
 namespace CustomerTestApp.WPF.ViewModels
 {
@@ -53,7 +53,7 @@ namespace CustomerTestApp.WPF.ViewModels
             {
                 _selectedCustomer = value;
                 OnPropertyChanged(nameof(SelectedCustomer));
-                WeakReferenceMessenger.Default.Send(new SelectedCustomerChangedMessage(_selectedCustomer));
+                Messenger.Instance.Send(new SelectedCustomerChangedMessage(_selectedCustomer));
             }
         }
 
@@ -110,10 +110,7 @@ namespace CustomerTestApp.WPF.ViewModels
             LoadCustomers();
             NewCustomerCommand = new RelayCommand(CreateNewCustomer);
             RemoveCustomerCommand = new RelayCommand<Customer>(RemoveCustomer);
-            WeakReferenceMessenger.Default.Register<SaveCustomerMessage>(this, (r, m) =>
-            {
-                SaveCustomer(m.Customer);
-            });
+            Messenger.Instance.Register<SaveCustomerMessage>(m => SaveCustomer(m.Customer));
         }
 
         #region Private Methods
