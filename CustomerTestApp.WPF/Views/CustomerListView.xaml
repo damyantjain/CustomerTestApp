@@ -68,14 +68,12 @@
                             <TextBlock
                                 Grid.Row="1"
                                 Grid.Column="0"
-                                FontSize="14"
-                                Foreground="Gray"
+                                Style="{StaticResource MetallicTextStyle}"
                                 Text="{Binding Path=Email}" />
                             <TextBlock
                                 Grid.Row="2"
                                 Grid.Column="0"
-                                FontSize="14"
-                                Foreground="Gray"
+                                Style="{StaticResource MetallicTextStyle}"
                                 Text="{Binding Path=Discount, StringFormat='Discount - {0}%'}" />
                             <Button
                                 Grid.Row="0"
