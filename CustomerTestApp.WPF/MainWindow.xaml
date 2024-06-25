@@ -3,10 +3,18 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:CustomerTestApp.WPF"
+        xmlns:local="clr-namespace:CustomerTestApp.WPF" 
+        xmlns:views="clr-namespace:CustomerTestApp.WPF.Views"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="650" Width="1150">
     <Grid>
-
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" MinWidth="300"/>
+            <ColumnDefinition Width="3"/>
+            <ColumnDefinition Width="2*" MinWidth="400"/>
+        </Grid.ColumnDefinitions>
+        <views:CustomerListView Grid.Column="0"/>
+        <GridSplitter Grid.Column="1" Width="3" Background="Gray" HorizontalAlignment="Stretch"/>
+        <views:CustomerEditView Grid.Column="2"/>   
     </Grid>
 </Window>
