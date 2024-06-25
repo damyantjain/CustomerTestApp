@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace CustomerTestApp.WPF.Helpers
+namespace CustomerTestApp.WPF.Helpers.Validation
 {
     /// <summary>
     /// The Interface extending the INotifyDataErrorInfo and adding useful functionalities.

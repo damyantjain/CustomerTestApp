@@ -5,7 +5,7 @@ namespace CustomerTestApp.WPF.Messages
     /// <summary>
     /// The SelectedCustomerChangedMessage class creates a message for the selected customer.
     /// </summary>
-    public class SelectedCustomerChangedMessage
+    public class SelectedCustomerChangedMessage : BaseMessage
     {
         /// <summary>
         /// The Selected Customer

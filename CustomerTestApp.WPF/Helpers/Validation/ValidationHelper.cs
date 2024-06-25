@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.ComponentModel;
 
-namespace CustomerTestApp.WPF.Helpers
+namespace CustomerTestApp.WPF.Helpers.Validation
 {
     /// <summary>
     /// A validation helper class implementing the IValidationHelper and providing useful methods. 

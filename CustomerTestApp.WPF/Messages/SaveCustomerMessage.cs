@@ -2,7 +2,7 @@
 
 namespace CustomerTestApp.WPF.Messages
 {
-    public class SaveCustomerMessage
+    public class SaveCustomerMessage : BaseMessage
     {
         public Customer Customer { get; }
 
