@@ -1,0 +1,16 @@
+[
+  {
+    "FirstName": "Damyant",
+    "LastName": "Jain",
+    "Email": "dj@example.com",
+    "Discount": 10,
+    "CanBeRemoved": false
+  },
+  {
+    "FirstName": "Sukriti",
+    "LastName": "Gantayet",
+    "Email": "sg@example.com",
+    "Discount": 15,
+    "CanBeRemoved": false
+  }
+]
