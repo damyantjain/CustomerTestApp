@@ -1,12 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿syntax = "proto3";
 
-namespace CustomerTestApp.WPF.Protos
-{
-    interface customer
-    {
-    }
+option csharp_namespace = "CustomerTestApp.Service";
+
+package customerService;
+
+message Customer {
+    int32 id = 1;
+    string firstName = 2;
+    string lastName = 3;
+    string email = 4;
+    int32 discount = 5;
+    bool canBeRemoved = 6;
+}
+
+message CustomerList {
+    repeated Customer customers = 1;
+}
+
+message CustomerId {
+    int32 id = 1;
+}
+
+message Empty {}
+
+service CustomerManagement {
+    rpc GetAllCustomers (Empty) returns (CustomerList);
+    rpc AddCustomer (Customer) returns (Empty);
+    rpc UpdateCustomer (Customer) returns (Empty);
+    rpc DeleteCustomer (CustomerId) returns (Empty);
 }
