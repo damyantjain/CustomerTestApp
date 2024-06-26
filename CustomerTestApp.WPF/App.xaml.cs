@@ -1,6 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
 using CustomerTestApp.WPF.ViewModels;
+using Microsoft.Extensions.Configuration;
+using System.IO;
+using CustomerTestApp.WPF.Services;
 
 namespace CustomerTestApp.WPF
 {
@@ -20,7 +23,6 @@ namespace CustomerTestApp.WPF
             var serviceCollection = new ServiceCollection();
             ConfigureServices(serviceCollection);
             ServiceProvider = serviceCollection.BuildServiceProvider();
-
             var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
             mainWindow.Show();
         }
@@ -31,9 +33,20 @@ namespace CustomerTestApp.WPF
         /// <param name="services"></param>
         private void ConfigureServices(IServiceCollection services)
         {
+            var config = LoadConfiguration();
+            services.AddSingleton(config);
             services.AddSingleton<CustomerDataViewModel>();
             services.AddTransient<CustomerEditViewModel>();
             services.AddSingleton<MainWindow>();
+            services.AddSingleton<ICustomerService, CustomerService>();
+        }
+
+        private IConfiguration LoadConfiguration()
+        {
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+            return builder.Build();
         }
     }
 }
