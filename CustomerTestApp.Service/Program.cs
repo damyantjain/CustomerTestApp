@@ -1,10 +1,10 @@
+using CustomerTestApp.Service;
 using CustomerTestApp.Service.Models;
 using CustomerTestApp.Service.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddGrpc();
 builder.Services.AddGrpcReflection();
 builder.Services.AddDbContext<CustomerContext>(options =>
@@ -12,7 +12,20 @@ builder.Services.AddDbContext<CustomerContext>(options =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<CustomerContext>();
+        context.Database.Migrate();
+        InitializeDB.Initialize(context);
+    }
+    catch (Exception ex)
+    {
+    }
+}
+
 app.MapGrpcService<GreeterService>();
 app.MapGrpcService<CustomerService>();
 app.MapGrpcReflectionService();
