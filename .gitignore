@@ -27,3 +27,20 @@ Thumbs.db
 
 # gRPC
 Generated/
+
+# SQLite database files
+*.db
+*.db3
+*.sqlite
+*.sqlite3
+
+# SQLite temporary files
+*.db-journal
+*.db-shm
+*.db-wal
+*.sqlite-journal
+*.sqlite-shm
+*.sqlite-wal
+
+*/Migrations/*.Designer.cs
+*.sql
