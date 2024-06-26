@@ -141,7 +141,7 @@ namespace CustomerTestApp.WPF.ViewModels
 
         #region Private Methods
 
-        private void SaveCustomer()
+        private async void SaveCustomer()
         {
             if (EditableCustomer != null)
             {
@@ -149,7 +149,7 @@ namespace CustomerTestApp.WPF.ViewModels
                 EditableCustomer.LastName = LastName;
                 EditableCustomer.Email = Email;
                 EditableCustomer.Discount = int.TryParse(Discount, out var discount) ? discount : 0;
-                Messenger.Instance.Send(new SaveCustomerMessage(EditableCustomer));
+                await Messenger.Instance.SendAsync(new SaveCustomerMessage(EditableCustomer));
             }
         }
 

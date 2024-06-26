@@ -62,6 +62,7 @@ namespace CustomerTestApp.Service.Services
             await _context.SaveChangesAsync();
             return new Empty();
         }
+
         /// <summary>
         /// This mehtod updates a customer in the database.
         /// </summary>

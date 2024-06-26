@@ -4,6 +4,7 @@ using CustomerTestApp.WPF.Messages;
 using CommunityToolkit.Mvvm.Input;
 using System.Windows;
 using CustomerTestApp.WPF.Helpers.Messenger;
+using CustomerTestApp.WPF.Services;
 
 namespace CustomerTestApp.WPF.ViewModels
 {
@@ -14,6 +15,8 @@ namespace CustomerTestApp.WPF.ViewModels
     {
 
         #region Private Members
+
+        private readonly ICustomerService _customerService;
 
         private Customer _selectedCustomer;
 
@@ -103,14 +106,15 @@ namespace CustomerTestApp.WPF.ViewModels
         /// <summary>
         /// The Customer Data View Model constructor initializes the customer list.
         /// </summary>
-        public CustomerDataViewModel() 
+        public CustomerDataViewModel(ICustomerService customerService) 
         {
+            _customerService = customerService;
             CustomerList = new ObservableCollection<Customer>();
             FilteredCustomerList = new ObservableCollection<Customer>();
-            LoadCustomers();
+            _ = LoadCustomers();
             NewCustomerCommand = new RelayCommand(CreateNewCustomer);
             RemoveCustomerCommand = new RelayCommand<Customer>(RemoveCustomer);
-            Messenger.Instance.Register<SaveCustomerMessage>(m => SaveCustomer(m.Customer));
+            Messenger.Instance.Register<SaveCustomerMessage>(async m => await SaveCustomer(m.Customer));
         }
 
         #region Private Methods
@@ -124,53 +128,66 @@ namespace CustomerTestApp.WPF.ViewModels
         /// <summary>
         /// The LoadCustomers method loads the customers into the customer list.
         /// </summary>
-        private void LoadCustomers()
+        private async Task LoadCustomers()
         {
-            //Service call to get all customers.
-            CustomerList.Add(new Customer { Id = 1, FirstName = "Damyant", LastName = "Jain", Email = "dj@example.com", CanBeRemoved = false, Discount = 10 });
-            CustomerList.Add(new Customer { Id = 2, FirstName = "Sukriti", LastName = "Gantayet", Email = "sg@example.com", CanBeRemoved = false, Discount = 15 });
+            var customerList = await _customerService.GetAllCustomersAsync();
+            CustomerList.Clear();
+            foreach (var customer in customerList.Customers)
+            {
+                CustomerList.Add(new Customer
+                {
+                    Id = customer.Id,
+                    FirstName = customer.FirstName,
+                    LastName = customer.LastName,
+                    Email = customer.Email,
+                    Discount = customer.Discount,
+                    CanBeRemoved = customer.CanBeRemoved
+                });
+            }
             ApplyFilter();
         }
 
-        private void SaveCustomer(Customer customer)
+        private async Task SaveCustomer(Customer customer)
         {
-            if(customer.Id == 0)
+            if (customer.Id == 0)
             {
-                AddNewCustomer(customer);
-            } 
+                await AddNewCustomer(customer);
+            }
             else
             {
-               UpdateCustomer(customer);
+                await UpdateCustomer(customer);
             }
-            //LoadCustomers();
             SelectedCustomer = null;
-        }
-
-        private void AddNewCustomer(Customer customer)
-        {
-            //Later we will let Sqlite handle it.
-            customer.Id = CustomerList.Any() ? CustomerList.Max(c => c.Id) + 1 : 1;
-            customer.CanBeRemoved = true;
-            CustomerList.Add(customer);
             ApplyFilter();
-            //Service call to add customer.
         }
 
-        private void UpdateCustomer(Customer customer)
+        private async Task AddNewCustomer(Customer customer)
         {
-            var existingCustomer = CustomerList.FirstOrDefault(c => c.Id == customer.Id);
-            if (existingCustomer != null)
+            var newCustomer = new Service.Customer
             {
-                existingCustomer.FirstName = customer.FirstName;
-                existingCustomer.LastName = customer.LastName;
-                existingCustomer.Email = customer.Email;
-                existingCustomer.Discount = customer.Discount;
-            }
-            //Service call to update customer.
+                FirstName = customer.FirstName,
+                LastName = customer.LastName,
+                Email = customer.Email,
+                Discount = customer.Discount,
+                CanBeRemoved = true
+            };
+            await _customerService.AddCustomerAsync(newCustomer);
+            await LoadCustomers();
+        }
 
-            //For now, we will just update the customer in the list.
-            RefreshCustomerList(); 
-            ApplyFilter();
+        private async Task UpdateCustomer(Customer customer)
+        {
+            var updatedCustomer = new Service.Customer
+            {
+                Id = customer.Id,
+                FirstName = customer.FirstName,
+                LastName = customer.LastName,
+                Email = customer.Email,
+                Discount = customer.Discount,
+                CanBeRemoved = customer.CanBeRemoved
+            };
+            await _customerService.UpdateCustomerAsync(updatedCustomer);
+            await LoadCustomers();
         }
 
         private void RefreshCustomerList()
@@ -184,7 +201,7 @@ namespace CustomerTestApp.WPF.ViewModels
             OnPropertyChanged(nameof(CustomerList));
         }
 
-        private void RemoveCustomer(Customer customer)
+        private async void RemoveCustomer(Customer customer)
         {
             if (customer != null)
             {
@@ -192,9 +209,8 @@ namespace CustomerTestApp.WPF.ViewModels
                 if (result == MessageBoxResult.Yes)
                 {
                     SelectedCustomer = null;
-                    //Need to add a service call to delete the customer.
-                    CustomerList.Remove(customer);
-                    ApplyFilter();
+                    await _customerService.DeleteCustomerAsync(customer.Id);
+                    await LoadCustomers();
                 }
             }
         }
