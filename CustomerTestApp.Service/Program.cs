@@ -10,10 +10,7 @@ builder.Services.AddGrpcReflection();
 builder.Services.AddDbContext<CustomerContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("CustomerTestDatabase")));
 
-
 var app = builder.Build();
-
-
 
 // Configure the HTTP request pipeline.
 app.MapGrpcService<GreeterService>();

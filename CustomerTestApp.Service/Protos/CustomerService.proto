@@ -10,14 +10,15 @@ message Customer {
     string lastName = 3;
     string email = 4;
     int32 discount = 5;
-}
-
-message CustomerId {
-    int32 id = 1;
+    bool canBeRemoved = 6;
 }
 
 message CustomerList {
     repeated Customer customers = 1;
+}
+
+message CustomerId {
+    int32 id = 1;
 }
 
 message Empty {}

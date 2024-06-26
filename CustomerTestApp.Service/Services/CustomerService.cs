@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using CustomerTestApp.Service.Models;
+﻿using CustomerTestApp.Service.Models;
 using Grpc.Core;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,14 +27,18 @@ namespace CustomerTestApp.Service.Services
         {
             var customers = await _context.Customers.ToListAsync();
             var response = new CustomerList();
-            response.Customers.AddRange(customers.Select(c => new Customer
+            foreach(var c in customers)
             {
-                Id = c.Id,
-                FirstName = c.FirstName,
-                LastName = c.LastName,
-                Email = c.Email,
-                Discount = c.Discount
-            }));
+                response.Customers.Add(new Customer
+                {
+                    Id = c.Id,
+                    FirstName = c.FirstName,
+                    LastName = c.LastName,
+                    Email = c.Email,
+                    Discount = c.Discount,
+                    CanBeRemoved = c.CanBeRemoved
+                });
+            }
             return response;
         }
 
@@ -53,13 +55,13 @@ namespace CustomerTestApp.Service.Services
                 FirstName = request.FirstName,
                 LastName = request.LastName,
                 Email = request.Email,
-                Discount = request.Discount
+                Discount = request.Discount,
+                CanBeRemoved = request.CanBeRemoved
             };
             _context.Customers.Add(customer);
             await _context.SaveChangesAsync();
             return new Empty();
         }
-
         /// <summary>
         /// This mehtod updates a customer in the database.
         /// </summary>
@@ -75,6 +77,7 @@ namespace CustomerTestApp.Service.Services
                 customer.LastName = request.LastName;
                 customer.Email = request.Email;
                 customer.Discount = request.Discount;
+                customer.CanBeRemoved = request.CanBeRemoved;
                 await _context.SaveChangesAsync();
             }
             return new Empty();
