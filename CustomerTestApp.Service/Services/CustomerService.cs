@@ -47,19 +47,32 @@ namespace CustomerTestApp.Service.Services
         /// <param name="request">Request with customer information</param>
         /// <param name="context">This is the server call context</param>
         /// <returns></returns>
-        public override async Task<Empty> AddCustomer(Customer request, ServerCallContext context)
+        public override async Task<CustomerResponse> AddCustomer(Customer request, ServerCallContext context)
         {
-            var customer = new Models.Customer
+            var response = new CustomerResponse();
+            try
             {
-                FirstName = request.FirstName,
-                LastName = request.LastName,
-                Email = request.Email,
-                Discount = request.Discount,
-                CanBeRemoved = request.CanBeRemoved
-            };
-            _context.Customers.Add(customer);
-            await _context.SaveChangesAsync();
-            return new Empty();
+                var customer = new Models.Customer
+                {
+                    FirstName = request.FirstName,
+                    LastName = request.LastName,
+                    Email = request.Email,
+                    Discount = request.Discount,
+                    CanBeRemoved = request.CanBeRemoved
+                };
+                _context.Customers.Add(customer);
+                await _context.SaveChangesAsync();
+
+                response.Status = Status.Success;
+                response.Message = "Customer added successfully";
+            }
+            catch (Exception ex)
+            {
+                //Log exception
+                response.Status = Status.Error;
+                response.Message = "Something went wrong";
+            }
+            return response;
         }
 
         /// <summary>
@@ -68,19 +81,38 @@ namespace CustomerTestApp.Service.Services
         /// <param name="request">Request with customer information.</param>
         /// <param name="context">This is the server call context</param>
         /// <returns></returns>
-        public override async Task<Empty> UpdateCustomer(Customer request, ServerCallContext context)
+        public override async Task<CustomerResponse> UpdateCustomer(Customer request, ServerCallContext context)
         {
-            var customer = await _context.Customers.FindAsync(request.Id);
-            if (customer != null)
+            var response = new CustomerResponse();
+            try
             {
-                customer.FirstName = request.FirstName;
-                customer.LastName = request.LastName;
-                customer.Email = request.Email;
-                customer.Discount = request.Discount;
-                customer.CanBeRemoved = request.CanBeRemoved;
-                await _context.SaveChangesAsync();
+                var existingCustomer = await _context.Customers.FindAsync(request.Id);
+                if (existingCustomer != null)
+                {
+                    existingCustomer.FirstName = request.FirstName;
+                    existingCustomer.LastName = request.LastName;
+                    existingCustomer.Email = request.Email;
+                    existingCustomer.Discount = request.Discount;
+                    existingCustomer.CanBeRemoved = request.CanBeRemoved;
+
+                    await _context.SaveChangesAsync();
+
+                    response.Status = Status.Success;
+                    response.Message = "Customer updated successfully";
+                }
+                else
+                {
+                    response.Status = Status.Error;
+                    response.Message = "Customer not found";
+                }
             }
-            return new Empty();
+            catch (Exception ex)
+            {
+                // Log the exception
+                response.Status = Status.Error;
+                response.Message = "Internal server error";
+            }
+            return response;
         }
 
         /// <summary>
@@ -89,15 +121,33 @@ namespace CustomerTestApp.Service.Services
         /// <param name="request">Request with customer information.</param>
         /// <param name="context">This is the server call context.</param>
         /// <returns></returns>
-        public override async Task<Empty> DeleteCustomer(CustomerId request, ServerCallContext context)
+        public override async Task<CustomerResponse> DeleteCustomer(CustomerId request, ServerCallContext context)
         {
-            var customer = await _context.Customers.FindAsync(request.Id);
-            if (customer != null)
+            var response = new CustomerResponse();
+            try
             {
-                _context.Customers.Remove(customer);
-                await _context.SaveChangesAsync();
+                var existingCustomer = await _context.Customers.FindAsync(request.Id);
+                if (existingCustomer != null && existingCustomer.CanBeRemoved)
+                {
+                    _context.Customers.Remove(existingCustomer);
+                    await _context.SaveChangesAsync();
+
+                    response.Status = Status.Success;
+                    response.Message = "Customer deleted successfully";
+                }
+                else
+                {
+                    response.Status = Status.Error;
+                    response.Message = "Customer not found or cannot be removed";
+                }
             }
-            return new Empty();
+            catch (Exception ex)
+            {
+                // Log the exception
+                response.Status = Status.Error;
+                response.Message = "Internal server error";
+            }
+            return response;
         }
     }
 }

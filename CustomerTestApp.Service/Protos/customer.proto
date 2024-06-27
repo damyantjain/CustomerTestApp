@@ -19,9 +19,21 @@ message CustomerId {
 
 message Empty {}
 
+
+message CustomerResponse {
+    Status status = 1;
+    string message = 2;
+}
+
+enum Status {
+    SUCCESS = 0;
+    ERROR = 1;
+}
+
 service CustomerManagement {
     rpc GetAllCustomers (Empty) returns (stream Customer);
-    rpc AddCustomer (Customer) returns (Empty);
-    rpc UpdateCustomer (Customer) returns (Empty);
-    rpc DeleteCustomer (CustomerId) returns (Empty);
+    rpc AddCustomer (Customer) returns (CustomerResponse);
+    rpc UpdateCustomer (Customer) returns (CustomerResponse);
+    rpc DeleteCustomer (CustomerId) returns (CustomerResponse);
 }
+
