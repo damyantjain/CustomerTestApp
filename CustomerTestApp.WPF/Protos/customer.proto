@@ -13,10 +13,6 @@ message Customer {
     bool canBeRemoved = 6;
 }
 
-message CustomerList {
-    repeated Customer customers = 1;
-}
-
 message CustomerId {
     int32 id = 1;
 }
@@ -24,7 +20,7 @@ message CustomerId {
 message Empty {}
 
 service CustomerManagement {
-    rpc GetAllCustomers (Empty) returns (CustomerList);
+    rpc GetAllCustomers (Empty) returns (stream Customer);
     rpc AddCustomer (Customer) returns (Empty);
     rpc UpdateCustomer (Customer) returns (Empty);
     rpc DeleteCustomer (CustomerId) returns (Empty);

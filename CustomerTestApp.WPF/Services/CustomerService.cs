@@ -1,4 +1,5 @@
 ﻿using CustomerTestApp.Service;
+using Grpc.Core;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Configuration;
 
@@ -15,9 +16,13 @@ namespace CustomerTestApp.WPF.Services
             _client = new CustomerManagement.CustomerManagementClient(channel);
         }
 
-        public async Task<CustomerList> GetAllCustomersAsync()
+        public async IAsyncEnumerable<Customer> GetAllCustomers()
         {
-            return await _client.GetAllCustomersAsync(new Empty());
+            using var streamCall = _client.GetAllCustomers(new Empty());
+            await foreach (var customer in streamCall.ResponseStream.ReadAllAsync())
+            {
+                yield return customer;
+            }
         }
 
         public async Task AddCustomerAsync(Customer customer)
