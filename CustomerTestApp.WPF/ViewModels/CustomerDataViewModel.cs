@@ -171,8 +171,17 @@ namespace CustomerTestApp.WPF.ViewModels
                 Discount = customer.Discount,
                 CanBeRemoved = true
             };
-            await _customerService.AddCustomerAsync(newCustomer);
-            await LoadCustomers();
+
+            var response = await _customerService.AddCustomerAsync(newCustomer);
+
+            if (response.Status == Service.Status.Success)
+            {
+                await LoadCustomers();
+            }
+            else
+            {
+                MessageBox.Show(response.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private async Task UpdateCustomer(Customer customer)
@@ -186,9 +195,19 @@ namespace CustomerTestApp.WPF.ViewModels
                 Discount = customer.Discount,
                 CanBeRemoved = customer.CanBeRemoved
             };
-            await _customerService.UpdateCustomerAsync(updatedCustomer);
-            await LoadCustomers();
+
+            var response = await _customerService.UpdateCustomerAsync(updatedCustomer);
+
+            if (response.Status == Service.Status.Success)
+            {
+                await LoadCustomers();
+            }
+            else
+            {
+                MessageBox.Show(response.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
+
 
         private void RefreshCustomerList()
         {
@@ -209,8 +228,16 @@ namespace CustomerTestApp.WPF.ViewModels
                 if (result == MessageBoxResult.Yes)
                 {
                     SelectedCustomer = null;
-                    await _customerService.DeleteCustomerAsync(customer.Id);
-                    await LoadCustomers();
+                    var response = await _customerService.DeleteCustomerAsync(customer.Id);
+
+                    if (response.Status == Service.Status.Success)
+                    {
+                        await LoadCustomers();
+                    }
+                    else
+                    {
+                        MessageBox.Show(response.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                 }
             }
         }

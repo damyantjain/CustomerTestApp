@@ -25,19 +25,20 @@ namespace CustomerTestApp.WPF.Services
             }
         }
 
-        public async Task AddCustomerAsync(Customer customer)
+        public async Task<CustomerResponse> AddCustomerAsync(Customer customer)
         {
-            await _client.AddCustomerAsync(customer);
+            return await _client.AddCustomerAsync(customer);
         }
 
-        public async Task UpdateCustomerAsync(Customer customer)
+        public async Task<CustomerResponse> UpdateCustomerAsync(Customer customer)
         {
-            await _client.UpdateCustomerAsync(customer);
+            return await _client.UpdateCustomerAsync(customer);
         }
 
-        public async Task DeleteCustomerAsync(int customerId)
+        public async Task<CustomerResponse> DeleteCustomerAsync(int customerId)
         {
-            await _client.DeleteCustomerAsync(new CustomerId { Id = customerId });
+            return await _client.DeleteCustomerAsync(new CustomerId { Id = customerId });
         }
+
     }
 }
