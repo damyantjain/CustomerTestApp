@@ -21,25 +21,24 @@ namespace CustomerTestApp.Service.Services
         /// This method returns all customers from the database.
         /// </summary>
         /// <param name="request">This is an empty request</param>
+        /// <param name="responseStream">This is the response stream having the customer object</param>
         /// <param name="context">This is the server call context</param>
         /// <returns></returns>
-        public override async Task<CustomerList> GetAllCustomers(Empty request, ServerCallContext context)
+        public override async Task GetAllCustomers(Empty request, IServerStreamWriter<Customer> responseStream, ServerCallContext context)
         {
-            var customers = await _context.Customers.ToListAsync();
-            var response = new CustomerList();
-            foreach(var c in customers)
+            await foreach(var customer in _context.Customers.AsAsyncEnumerable())
             {
-                response.Customers.Add(new Customer
+                var customerMessage = new Customer
                 {
-                    Id = c.Id,
-                    FirstName = c.FirstName,
-                    LastName = c.LastName,
-                    Email = c.Email,
-                    Discount = c.Discount,
-                    CanBeRemoved = c.CanBeRemoved
-                });
+                    Id = customer.Id,
+                    FirstName = customer.FirstName,
+                    LastName = customer.LastName,
+                    Email = customer.Email,
+                    Discount = customer.Discount,
+                    CanBeRemoved = customer.CanBeRemoved
+                };
+                await responseStream.WriteAsync(customerMessage);
             }
-            return response;
         }
 
         /// <summary>

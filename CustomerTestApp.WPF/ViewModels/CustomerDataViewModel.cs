@@ -130,9 +130,9 @@ namespace CustomerTestApp.WPF.ViewModels
         /// </summary>
         private async Task LoadCustomers()
         {
-            var customerList = await _customerService.GetAllCustomersAsync();
+
             CustomerList.Clear();
-            foreach (var customer in customerList.Customers)
+            await foreach (var customer in _customerService.GetAllCustomers())
             {
                 CustomerList.Add(new Customer
                 {
