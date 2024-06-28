@@ -1,20 +1,23 @@
-﻿using CustomerTestApp.Service.Models;
+﻿using CustomerTestApp.Service.Exceptions;
+using CustomerTestApp.Service.Models;
+using CustomerTestApp.Service.Repositories;
 using Grpc.Core;
+using Grpc.Net.Client;
 using Microsoft.EntityFrameworkCore;
 
 namespace CustomerTestApp.Service.Services
 {
     public class CustomerService : CustomerManagement.CustomerManagementBase
     {
-        private readonly CustomerContext _context;
+        private readonly ICustomerRepository _customerRepository;
 
         /// <summary>
-        /// The customer context is injected here.
+        /// The customer repository is injected here.
         /// </summary>
         /// <param name="context"></param>
-        public CustomerService(CustomerContext context)
+        public CustomerService(ICustomerRepository customerRepository)
         {
-            _context = context;
+            _customerRepository = customerRepository;
         }
 
         /// <summary>
@@ -26,20 +29,32 @@ namespace CustomerTestApp.Service.Services
         /// <returns></returns>
         public override async Task GetAllCustomers(Empty request, IServerStreamWriter<Customer> responseStream, ServerCallContext context)
         {
-            await foreach(var customer in _context.Customers.AsAsyncEnumerable())
+            try
             {
-                var customerMessage = new Customer
+                await foreach (var customer in _customerRepository.GetAllCustomersAsync())
                 {
-                    Id = customer.Id,
-                    FirstName = customer.FirstName,
-                    LastName = customer.LastName,
-                    Email = customer.Email,
-                    Discount = customer.Discount,
-                    CanBeRemoved = customer.CanBeRemoved
-                };
-                await responseStream.WriteAsync(customerMessage);
+                    var customerMessage = new Customer
+                    {
+                        Id = customer.Id,
+                        FirstName = customer.FirstName,
+                        LastName = customer.LastName,
+                        Email = customer.Email,
+                        Discount = customer.Discount,
+                        CanBeRemoved = customer.CanBeRemoved
+                    };
+                    await responseStream.WriteAsync(customerMessage);
+                }
+            }
+            catch (RepositoryException ex)
+            {
+                //log to ba added
+            }
+            catch (Exception ex)
+            {
+                //log to ba added
             }
         }
+
 
         /// <summary>
         /// This method adds a customer to the database.
@@ -49,7 +64,6 @@ namespace CustomerTestApp.Service.Services
         /// <returns></returns>
         public override async Task<CustomerResponse> AddCustomer(Customer request, ServerCallContext context)
         {
-            var response = new CustomerResponse();
             try
             {
                 var customer = new Models.Customer
@@ -60,19 +74,17 @@ namespace CustomerTestApp.Service.Services
                     Discount = request.Discount,
                     CanBeRemoved = request.CanBeRemoved
                 };
-                _context.Customers.Add(customer);
-                await _context.SaveChangesAsync();
-
-                response.Status = Status.Success;
-                response.Message = "Customer added successfully";
+                await _customerRepository.AddCustomerAsync(customer);
+                return new CustomerResponse { Status = Status.Success, Message = "Customer added successfully." };
+            }
+            catch (RepositoryException ex)
+            {
+                return new CustomerResponse { Status = Status.Error, Message = ex.Message };
             }
             catch (Exception ex)
             {
-                //Log exception
-                response.Status = Status.Error;
-                response.Message = "Something went wrong";
+                return new CustomerResponse { Status = Status.Error, Message = "An unexpected error occurred: " + ex.Message };
             }
-            return response;
         }
 
         /// <summary>
@@ -83,36 +95,29 @@ namespace CustomerTestApp.Service.Services
         /// <returns></returns>
         public override async Task<CustomerResponse> UpdateCustomer(Customer request, ServerCallContext context)
         {
-            var response = new CustomerResponse();
             try
             {
-                var existingCustomer = await _context.Customers.FindAsync(request.Id);
-                if (existingCustomer != null)
+                var customer = new Models.Customer
                 {
-                    existingCustomer.FirstName = request.FirstName;
-                    existingCustomer.LastName = request.LastName;
-                    existingCustomer.Email = request.Email;
-                    existingCustomer.Discount = request.Discount;
-                    existingCustomer.CanBeRemoved = request.CanBeRemoved;
-
-                    await _context.SaveChangesAsync();
-
-                    response.Status = Status.Success;
-                    response.Message = "Customer updated successfully";
-                }
-                else
-                {
-                    response.Status = Status.Error;
-                    response.Message = "Customer not found";
-                }
+                    Id = request.Id,
+                    FirstName = request.FirstName,
+                    LastName = request.LastName,
+                    Email = request.Email,
+                    Discount = request.Discount,
+                    CanBeRemoved = request.CanBeRemoved
+                };
+                await _customerRepository.UpdateCustomerAsync(customer);
+                return new CustomerResponse { Status = Status.Success, Message = "Customer updated successfully." };
+            }
+            catch (RepositoryException ex)
+            {
+                return new CustomerResponse { Status = Status.Error, Message = ex.Message };
             }
             catch (Exception ex)
             {
-                // Log the exception
-                response.Status = Status.Error;
-                response.Message = "Internal server error";
+                return new CustomerResponse { Status = Status.Error, Message = "An unexpected error occurred: " + ex.Message };
             }
-            return response;
+
         }
 
         /// <summary>
@@ -123,31 +128,19 @@ namespace CustomerTestApp.Service.Services
         /// <returns></returns>
         public override async Task<CustomerResponse> DeleteCustomer(CustomerId request, ServerCallContext context)
         {
-            var response = new CustomerResponse();
             try
             {
-                var existingCustomer = await _context.Customers.FindAsync(request.Id);
-                if (existingCustomer != null && existingCustomer.CanBeRemoved)
-                {
-                    _context.Customers.Remove(existingCustomer);
-                    await _context.SaveChangesAsync();
-
-                    response.Status = Status.Success;
-                    response.Message = "Customer deleted successfully";
-                }
-                else
-                {
-                    response.Status = Status.Error;
-                    response.Message = "Customer not found or cannot be removed";
-                }
+                await _customerRepository.DeleteCustomerAsync(request.Id);
+                return new CustomerResponse { Status = Status.Success, Message = "Customer deleted successfully." };
+            }
+            catch (RepositoryException ex)
+            {
+                return new CustomerResponse { Status = Status.Error, Message = ex.Message };
             }
             catch (Exception ex)
             {
-                // Log the exception
-                response.Status = Status.Error;
-                response.Message = "Internal server error";
+                return new CustomerResponse { Status = Status.Error, Message = "An unexpected error occurred: " + ex.Message };
             }
-            return response;
         }
     }
 }
