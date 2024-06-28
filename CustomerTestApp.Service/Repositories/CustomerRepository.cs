@@ -7,6 +7,8 @@ namespace CustomerTestApp.Service.Repositories
     {
         private readonly CustomerContext _context;
 
+        private readonly object _lock = new object();
+
         public CustomerRepository(CustomerContext context)
         {
             _context = context;
@@ -42,7 +44,10 @@ namespace CustomerTestApp.Service.Repositories
         {
             try
             {
-                _context.Customers.Add(customer);
+                lock(_lock)
+                {
+                    _context.Customers.Add(customer);
+                }
                 await _context.SaveChangesAsync();
             }
             catch (Exception ex)
@@ -55,7 +60,10 @@ namespace CustomerTestApp.Service.Repositories
         {
             try
             {
-                _context.Customers.Update(customer);
+                lock(_lock)
+                {
+                    _context.Customers.Update(customer);
+                }
                 await _context.SaveChangesAsync();
             }
             catch (Exception ex)
@@ -68,12 +76,15 @@ namespace CustomerTestApp.Service.Repositories
         {
             try
             {
-                var customer = await _context.Customers.FindAsync(id);
-                if (customer != null)
+                lock (_lock)
                 {
-                    _context.Customers.Remove(customer);
-                    await _context.SaveChangesAsync();
+                    var customer = _context.Customers.Find(id);
+                    if (customer != null)
+                    {
+                        _context.Customers.Remove(customer);
+                    }
                 }
+                await _context.SaveChangesAsync();
             }
             catch (Exception ex)
             {
