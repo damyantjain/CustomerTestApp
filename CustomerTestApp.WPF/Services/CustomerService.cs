@@ -24,20 +24,52 @@ namespace CustomerTestApp.WPF.Services
                 yield return customer;
             }
         }
-
         public async Task<CustomerResponse> AddCustomerAsync(Customer customer)
         {
-            return await _client.AddCustomerAsync(customer);
+            try
+            {
+                return await _client.AddCustomerAsync(customer);
+            }
+            catch (RpcException ex)
+            {
+                return new CustomerResponse { Status = Service.Status.Error, Message = $"gRPC error: {ex.Status.Detail}" };
+            }
+            catch (Exception ex)
+            {
+                return new CustomerResponse { Status = Service.Status.Error, Message = $"An error occurred: {ex.Message}" };
+            }
         }
-
         public async Task<CustomerResponse> UpdateCustomerAsync(Customer customer)
         {
-            return await _client.UpdateCustomerAsync(customer);
+            try
+            {
+                return await _client.UpdateCustomerAsync(customer);
+            }
+            catch (RpcException ex)
+            {
+                return new CustomerResponse { Status = Service.Status.Error, Message = $"gRPC error: {ex.Status.Detail}" };
+            }
+            catch (Exception ex)
+            {
+                return new CustomerResponse { Status = Service.Status.Error, Message = $"An error occurred: {ex.Message}" };
+            }
         }
 
         public async Task<CustomerResponse> DeleteCustomerAsync(int customerId)
         {
-            return await _client.DeleteCustomerAsync(new CustomerId { Id = customerId });
+            try
+            {
+                var request = new CustomerId { Id = customerId };
+                return await _client.DeleteCustomerAsync(request);
+            }
+            catch (RpcException ex)
+            {
+                return new CustomerResponse { Status = Service.Status.Error, Message = $"gRPC error: {ex.Status.Detail}" };
+            }
+            catch (Exception ex)
+            {
+                return new CustomerResponse { Status = Service.Status.Error, Message = $"An error occurred: {ex.Message}" };
+            }
         }
 
     }
