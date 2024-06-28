@@ -1,5 +1,6 @@
 using CustomerTestApp.Service;
 using CustomerTestApp.Service.Models;
+using CustomerTestApp.Service.Repositories;
 using CustomerTestApp.Service.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,6 +10,8 @@ builder.Services.AddGrpc();
 builder.Services.AddGrpcReflection();
 builder.Services.AddDbContext<CustomerContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("CustomerTestDatabase")));
+
+builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 
 var app = builder.Build();
 
