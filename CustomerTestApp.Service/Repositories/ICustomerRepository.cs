@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace CustomerTestApp.Service.Repositories
+﻿namespace CustomerTestApp.Service.Repositories
 {
     public interface ICustomerRepository
     {
