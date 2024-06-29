@@ -3,6 +3,7 @@ using CustomerTestApp.Service.Models;
 using CustomerTestApp.Service.Repositories;
 using CustomerTestApp.Service.Services;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,12 @@ builder.Services.AddDbContext<CustomerContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("CustomerTestDatabase")));
 
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+
+builder.Host.UseSerilog((context, services, configuration) => configuration
+    .ReadFrom.Configuration(context.Configuration)
+    .ReadFrom.Services(services)
+    .Enrich.FromLogContext()
+);
 
 var app = builder.Build();
 

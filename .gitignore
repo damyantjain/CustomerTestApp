@@ -16,6 +16,9 @@ publish/
 # AssemblyInfo files
 Generated_Code/**/AssemblyInfo.*
 
+#Log files
+Logs/
+
 # OS Files #
 .DS_Store
 .DS_Store?
