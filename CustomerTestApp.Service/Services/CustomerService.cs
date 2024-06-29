@@ -12,13 +12,16 @@ namespace CustomerTestApp.Service.Services
     {
         private readonly ICustomerRepository _customerRepository;
 
+        private readonly ILogger<CustomerService> _logger;
+                
         /// <summary>
         /// The customer repository is injected here.
         /// </summary>
         /// <param name="context"></param>
-        public CustomerService(ICustomerRepository customerRepository)
+        public CustomerService(ICustomerRepository customerRepository, ILogger<CustomerService> logger)
         {
             _customerRepository = customerRepository;
+            _logger = logger;
         }
 
         /// <summary>
@@ -32,6 +35,7 @@ namespace CustomerTestApp.Service.Services
         {
             try
             {
+                _logger.LogInformation("Fetching all customers with filter type - {FilterType} and search text - {SearchText}", request.FilterType, request.SearchText);
                 var cancellationToken = context.CancellationToken;
                 await foreach (var customer in _customerRepository.GetFilteredCustomersAsync(request.FilterType, request.SearchText, cancellationToken))
                 {
@@ -49,11 +53,11 @@ namespace CustomerTestApp.Service.Services
             }
             catch (RepositoryException ex)
             {
-                //log to ba added
+                _logger.LogError(ex, "Repository level error occurred while retrieving customers.");
             }
             catch (Exception ex)
             {
-                //log to ba added
+                _logger.LogError(ex, "Something went wrong while fetching customers.");
             }
         }
 
@@ -67,6 +71,7 @@ namespace CustomerTestApp.Service.Services
         {
             try
             {
+                _logger.LogInformation("Adding a new customer: {FirstName} {LastName}", request.FirstName, request.LastName);
                 var customer = new Customer
                 {
                     FirstName = request.FirstName,
@@ -80,10 +85,12 @@ namespace CustomerTestApp.Service.Services
             }
             catch (RepositoryException ex)
             {
+                _logger.LogError(ex, "Repository error occurred while adding customer");
                 return new CustomerResponse { Status = Status.Error, Message = ex.Message };
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Something went wrong while adding customer");
                 return new CustomerResponse { Status = Status.Error, Message = "An unexpected error occurred: " + ex.Message };
             }
         }
@@ -98,6 +105,8 @@ namespace CustomerTestApp.Service.Services
         {
             try
             {
+                _logger.LogInformation("Updating customer: {FirstName} {LastName} having Id - {Id}",request.FirstName, request.LastName, request.Id);
+
                 var customer = new Customer
                 {
                     Id = request.Id,
@@ -112,10 +121,12 @@ namespace CustomerTestApp.Service.Services
             }
             catch (RepositoryException ex)
             {
+                _logger.LogError(ex, "Repository error occurred while updating customer");
                 return new CustomerResponse { Status = Status.Error, Message = ex.Message };
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Something went wrong while adding customer");
                 return new CustomerResponse { Status = Status.Error, Message = "An unexpected error occurred: " + ex.Message };
             }
 
@@ -131,15 +142,18 @@ namespace CustomerTestApp.Service.Services
         {
             try
             {
+                _logger.LogInformation("Deleting customer having Id - {Id}", request.Id);
                 await _customerRepository.DeleteCustomerAsync(request.Id);
                 return new CustomerResponse { Status = Status.Success, Message = "Customer deleted successfully." };
             }
             catch (RepositoryException ex)
             {
+                _logger.LogError(ex, "Repository error occurred while updating customer");
                 return new CustomerResponse { Status = Status.Error, Message = ex.Message };
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Something went wrong while adding customer");
                 return new CustomerResponse { Status = Status.Error, Message = "An unexpected error occurred: " + ex.Message };
             }
         }
