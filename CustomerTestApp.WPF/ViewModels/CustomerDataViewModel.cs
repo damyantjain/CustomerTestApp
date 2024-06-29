@@ -88,7 +88,6 @@ namespace CustomerTestApp.WPF.ViewModels
             {
                 _searchText = value;
                 OnPropertyChanged(nameof(SearchText));
-                //_searchDelayTimer.Change(500, Timeout.Infinite);
                 _ = LoadCustomersAsync();
             }
         }
@@ -103,7 +102,6 @@ namespace CustomerTestApp.WPF.ViewModels
             {
                 _selectedFilter = value;
                 OnPropertyChanged(nameof(SelectedFilter));
-                //ApplyFilter();
                 _ = LoadCustomersAsync();
             }
         }
@@ -118,9 +116,7 @@ namespace CustomerTestApp.WPF.ViewModels
             _customerService = customerService;
             CustomerList = new ObservableCollection<Customer>();
             FilteredCustomerList = new ObservableCollection<Customer>();
-           // _searchDelayTimer = new Timer(OnDebounceTimerElapsed);
             SearchText = "";
-            //_ = LoadCustomersAsync();
             NewCustomerCommand = new RelayCommand(CreateNewCustomer);
             RemoveCustomerCommand = new RelayCommand<Customer>(RemoveCustomer);
             Messenger.Instance.Register<SaveCustomerMessage>(async m => await SaveCustomer(m.Customer));
@@ -156,7 +152,6 @@ namespace CustomerTestApp.WPF.ViewModels
                     CanBeRemoved = customer.CanBeRemoved
                 });
             }
-            //ApplyFilter();
         }
 
         private async Task SaveCustomer(Customer customer)
@@ -170,7 +165,6 @@ namespace CustomerTestApp.WPF.ViewModels
                 await UpdateCustomer(customer);
             }
             SelectedCustomer = null;
-            //ApplyFilter();
         }
 
         private async Task AddNewCustomer(Customer customer)
@@ -220,18 +214,6 @@ namespace CustomerTestApp.WPF.ViewModels
             }
         }
 
-
-        private void RefreshCustomerList()
-        {
-            var tempList = new ObservableCollection<Customer>(CustomerList);
-            CustomerList.Clear();
-            foreach (var cust in tempList)
-            {
-                CustomerList.Add(cust);
-            }
-            OnPropertyChanged(nameof(CustomerList));
-        }
-
         private async void RemoveCustomer(Customer customer)
         {
             if (customer != null)
@@ -253,58 +235,6 @@ namespace CustomerTestApp.WPF.ViewModels
                 }
             }
         }
-
-        //private void OnDebounceTimerElapsed(object state)
-        //{
-        //    _ = LoadCustomersAsync();
-        //}
-
-        //private void ApplyFilter()
-        //{
-        //    if (string.IsNullOrEmpty(SearchText))
-        //    { 
-        //        FilteredCustomerList = new ObservableCollection<Customer>(CustomerList);
-        //        return;
-        //    }
-        //    var filteredCustomers = CustomerList.AsEnumerable();
-        //    switch (SelectedFilter)
-        //    {
-        //        case FilterType.Name:
-        //            filteredCustomers = FilterByName();
-        //            break;
-        //        case FilterType.Email:
-        //            filteredCustomers = FilterByEmail();
-        //            break;
-        //        case FilterType.All:
-        //            filteredCustomers = FilterAll();
-        //            break;
-        //    }
-        //    FilteredCustomerList = new ObservableCollection<Customer>(filteredCustomers);
-        //}
-
-        //private IEnumerable<Customer> FilterByName()
-        //{
-        //    return CustomerList.Where(x =>
-        //    {
-        //        var fullName = $"{x.FirstName} {x.LastName}";
-        //        return fullName.Contains(SearchText, StringComparison.OrdinalIgnoreCase);
-        //    });
-        //}
-
-        //private IEnumerable<Customer> FilterByEmail()
-        //{
-        //    return CustomerList.Where(x => x.Email.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
-        //}
-
-        //private IEnumerable<Customer> FilterAll()
-        //{
-        //    return CustomerList.Where(x =>
-        //    {
-        //        var fullName = $"{x.FirstName} {x.LastName}";
-        //        return fullName.Contains(SearchText, StringComparison.OrdinalIgnoreCase)
-        //        || x.Email.Contains(SearchText, StringComparison.OrdinalIgnoreCase);
-        //    });
-        //}
 
         #endregion
     }
