@@ -4,7 +4,7 @@ option csharp_namespace = "CustomerTestApp.Service";
 
 package customerService;
 
-message Customer {
+message CustomerModel {
     int32 id = 1;
     string firstName = 2;
     string lastName = 3;
@@ -19,7 +19,6 @@ message CustomerId {
 
 message Empty {}
 
-
 message CustomerResponse {
     Status status = 1;
     string message = 2;
@@ -30,10 +29,20 @@ enum Status {
     ERROR = 1;
 }
 
-service CustomerManagement {
-    rpc GetAllCustomers (Empty) returns (stream Customer);
-    rpc AddCustomer (Customer) returns (CustomerResponse);
-    rpc UpdateCustomer (Customer) returns (CustomerResponse);
-    rpc DeleteCustomer (CustomerId) returns (CustomerResponse);
+enum FilterType {
+    ALL = 0;
+    NAME = 1;
+    EMAIL = 2;
 }
 
+message CustomerFilter {
+    FilterType filterType = 1;
+    string searchText = 2;
+}
+
+service CustomerManagement {
+    rpc GetAllCustomers (CustomerFilter) returns (stream CustomerModel);
+    rpc AddCustomer (CustomerModel) returns (CustomerResponse);
+    rpc UpdateCustomer (CustomerModel) returns (CustomerResponse);
+    rpc DeleteCustomer (CustomerId) returns (CustomerResponse);
+}

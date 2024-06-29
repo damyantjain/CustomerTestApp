@@ -11,21 +11,21 @@ namespace CustomerTestApp.WPF.Services
         /// This returns all customers from the database.
         /// </summary>
         /// <returns>returns all customers from the database</returns>
-        IAsyncEnumerable<Customer> GetAllCustomers();
+        IAsyncEnumerable<CustomerModel> GetAllCustomersAsync(FilterType filterType, string searchText);
 
         /// <summary>
         /// This adds a customer to the database.
         /// </summary>
         /// <param name="customer">customer object to be added</param>
         /// <returns></returns>
-        Task<CustomerResponse> AddCustomerAsync(Customer customer);
+        Task<CustomerResponse> AddCustomerAsync(CustomerModel customer);
 
         /// <summary>
         /// This updates customer information in the database.
         /// </summary>
         /// <param name="customer">customer object to be updated</param>
         /// <returns></returns>
-        Task<CustomerResponse> UpdateCustomerAsync(Customer customer);
+        Task<CustomerResponse> UpdateCustomerAsync(CustomerModel customer);
 
         /// <summary>
         /// This deletes a customer from the database.
