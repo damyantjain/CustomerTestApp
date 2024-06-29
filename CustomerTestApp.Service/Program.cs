@@ -1,4 +1,5 @@
 using CustomerTestApp.Service;
+using CustomerTestApp.Service.Interceptors;
 using CustomerTestApp.Service.Models;
 using CustomerTestApp.Service.Repositories;
 using CustomerTestApp.Service.Services;
@@ -7,12 +8,16 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddGrpc();
+builder.Services.AddGrpc(options =>
+{
+    options.Interceptors.Add<LoggingInterceptor>();
+});
 builder.Services.AddGrpcReflection();
 builder.Services.AddDbContext<CustomerContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("CustomerTestDatabase")));
 
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+builder.Services.AddTransient<LoggingInterceptor>();
 
 builder.Host.UseSerilog((context, services, configuration) => configuration
     .ReadFrom.Configuration(context.Configuration)
