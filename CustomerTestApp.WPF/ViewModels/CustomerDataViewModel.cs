@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.Input;
 using System.Windows;
 using CustomerTestApp.WPF.Helpers.Messenger;
 using CustomerTestApp.WPF.Services;
+using CustomerTestApp.Service;
 
 namespace CustomerTestApp.WPF.ViewModels
 {
@@ -18,11 +19,15 @@ namespace CustomerTestApp.WPF.ViewModels
 
         private readonly ICustomerService _customerService;
 
+        private readonly Timer _searchDelayTimer;
+
         private Customer _selectedCustomer;
 
         private string _searchText;
 
         private FilterType _selectedFilter;
+
+        private CancellationTokenSource _cancellationTokenSource;
 
         private ObservableCollection<Customer> _filteredCustomerList;
 
@@ -83,7 +88,8 @@ namespace CustomerTestApp.WPF.ViewModels
             {
                 _searchText = value;
                 OnPropertyChanged(nameof(SearchText));
-                ApplyFilter();
+                //_searchDelayTimer.Change(500, Timeout.Infinite);
+                _ = LoadCustomersAsync();
             }
         }
 
@@ -97,7 +103,8 @@ namespace CustomerTestApp.WPF.ViewModels
             {
                 _selectedFilter = value;
                 OnPropertyChanged(nameof(SelectedFilter));
-                ApplyFilter();
+                //ApplyFilter();
+                _ = LoadCustomersAsync();
             }
         }
 
@@ -111,7 +118,9 @@ namespace CustomerTestApp.WPF.ViewModels
             _customerService = customerService;
             CustomerList = new ObservableCollection<Customer>();
             FilteredCustomerList = new ObservableCollection<Customer>();
-            _ = LoadCustomers();
+           // _searchDelayTimer = new Timer(OnDebounceTimerElapsed);
+            SearchText = "";
+            //_ = LoadCustomersAsync();
             NewCustomerCommand = new RelayCommand(CreateNewCustomer);
             RemoveCustomerCommand = new RelayCommand<Customer>(RemoveCustomer);
             Messenger.Instance.Register<SaveCustomerMessage>(async m => await SaveCustomer(m.Customer));
@@ -128,13 +137,16 @@ namespace CustomerTestApp.WPF.ViewModels
         /// <summary>
         /// The LoadCustomers method loads the customers into the customer list.
         /// </summary>
-        private async Task LoadCustomers()
+        private async Task LoadCustomersAsync()
         {
+            _cancellationTokenSource?.Cancel();
+            _cancellationTokenSource = new CancellationTokenSource();
+            var token = _cancellationTokenSource.Token;
 
-            CustomerList.Clear();
-            await foreach (var customer in _customerService.GetAllCustomers())
+            FilteredCustomerList.Clear();
+            await foreach (var customer in _customerService.GetAllCustomersAsync(SelectedFilter, SearchText, token).WithCancellation(token))
             {
-                CustomerList.Add(new Customer
+                FilteredCustomerList.Add(new Customer
                 {
                     Id = customer.Id,
                     FirstName = customer.FirstName,
@@ -144,7 +156,7 @@ namespace CustomerTestApp.WPF.ViewModels
                     CanBeRemoved = customer.CanBeRemoved
                 });
             }
-            ApplyFilter();
+            //ApplyFilter();
         }
 
         private async Task SaveCustomer(Customer customer)
@@ -158,12 +170,12 @@ namespace CustomerTestApp.WPF.ViewModels
                 await UpdateCustomer(customer);
             }
             SelectedCustomer = null;
-            ApplyFilter();
+            //ApplyFilter();
         }
 
         private async Task AddNewCustomer(Customer customer)
         {
-            var newCustomer = new Service.Customer
+            var newCustomer = new CustomerModel
             {
                 FirstName = customer.FirstName,
                 LastName = customer.LastName,
@@ -174,9 +186,9 @@ namespace CustomerTestApp.WPF.ViewModels
 
             var response = await _customerService.AddCustomerAsync(newCustomer);
 
-            if (response.Status == Service.Status.Success)
+            if (response.Status == Status.Success)
             {
-                await LoadCustomers();
+                await LoadCustomersAsync();
             }
             else
             {
@@ -186,7 +198,7 @@ namespace CustomerTestApp.WPF.ViewModels
 
         private async Task UpdateCustomer(Customer customer)
         {
-            var updatedCustomer = new Service.Customer
+            var updatedCustomer = new CustomerModel
             {
                 Id = customer.Id,
                 FirstName = customer.FirstName,
@@ -198,9 +210,9 @@ namespace CustomerTestApp.WPF.ViewModels
 
             var response = await _customerService.UpdateCustomerAsync(updatedCustomer);
 
-            if (response.Status == Service.Status.Success)
+            if (response.Status == Status.Success)
             {
-                await LoadCustomers();
+                await LoadCustomersAsync();
             }
             else
             {
@@ -230,9 +242,9 @@ namespace CustomerTestApp.WPF.ViewModels
                     SelectedCustomer = null;
                     var response = await _customerService.DeleteCustomerAsync(customer.Id);
 
-                    if (response.Status == Service.Status.Success)
+                    if (response.Status == Status.Success)
                     {
-                        await LoadCustomers();
+                        await LoadCustomersAsync();
                     }
                     else
                     {
@@ -242,52 +254,57 @@ namespace CustomerTestApp.WPF.ViewModels
             }
         }
 
-        private void ApplyFilter()
-        {
-            if (string.IsNullOrEmpty(SearchText))
-            { 
-                FilteredCustomerList = new ObservableCollection<Customer>(CustomerList);
-                return;
-            }
-            var filteredCustomers = CustomerList.AsEnumerable();
-            switch (SelectedFilter)
-            {
-                case FilterType.Name:
-                    filteredCustomers = FilterByName();
-                    break;
-                case FilterType.Email:
-                    filteredCustomers = FilterByEmail();
-                    break;
-                case FilterType.All:
-                    filteredCustomers = FilterAll();
-                    break;
-            }
-            FilteredCustomerList = new ObservableCollection<Customer>(filteredCustomers);
-        }
+        //private void OnDebounceTimerElapsed(object state)
+        //{
+        //    _ = LoadCustomersAsync();
+        //}
 
-        private IEnumerable<Customer> FilterByName()
-        {
-            return CustomerList.Where(x =>
-            {
-                var fullName = $"{x.FirstName} {x.LastName}";
-                return fullName.Contains(SearchText, StringComparison.OrdinalIgnoreCase);
-            });
-        }
+        //private void ApplyFilter()
+        //{
+        //    if (string.IsNullOrEmpty(SearchText))
+        //    { 
+        //        FilteredCustomerList = new ObservableCollection<Customer>(CustomerList);
+        //        return;
+        //    }
+        //    var filteredCustomers = CustomerList.AsEnumerable();
+        //    switch (SelectedFilter)
+        //    {
+        //        case FilterType.Name:
+        //            filteredCustomers = FilterByName();
+        //            break;
+        //        case FilterType.Email:
+        //            filteredCustomers = FilterByEmail();
+        //            break;
+        //        case FilterType.All:
+        //            filteredCustomers = FilterAll();
+        //            break;
+        //    }
+        //    FilteredCustomerList = new ObservableCollection<Customer>(filteredCustomers);
+        //}
 
-        private IEnumerable<Customer> FilterByEmail()
-        {
-            return CustomerList.Where(x => x.Email.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
-        }
+        //private IEnumerable<Customer> FilterByName()
+        //{
+        //    return CustomerList.Where(x =>
+        //    {
+        //        var fullName = $"{x.FirstName} {x.LastName}";
+        //        return fullName.Contains(SearchText, StringComparison.OrdinalIgnoreCase);
+        //    });
+        //}
 
-        private IEnumerable<Customer> FilterAll()
-        {
-            return CustomerList.Where(x =>
-            {
-                var fullName = $"{x.FirstName} {x.LastName}";
-                return fullName.Contains(SearchText, StringComparison.OrdinalIgnoreCase)
-                || x.Email.Contains(SearchText, StringComparison.OrdinalIgnoreCase);
-            });
-        }
+        //private IEnumerable<Customer> FilterByEmail()
+        //{
+        //    return CustomerList.Where(x => x.Email.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
+        //}
+
+        //private IEnumerable<Customer> FilterAll()
+        //{
+        //    return CustomerList.Where(x =>
+        //    {
+        //        var fullName = $"{x.FirstName} {x.LastName}";
+        //        return fullName.Contains(SearchText, StringComparison.OrdinalIgnoreCase)
+        //        || x.Email.Contains(SearchText, StringComparison.OrdinalIgnoreCase);
+        //    });
+        //}
 
         #endregion
     }

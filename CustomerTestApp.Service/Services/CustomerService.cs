@@ -1,12 +1,13 @@
 ﻿using CustomerTestApp.Service.Exceptions;
-using CustomerTestApp.Service.Models;
 using CustomerTestApp.Service.Repositories;
 using Grpc.Core;
-using Grpc.Net.Client;
-using Microsoft.EntityFrameworkCore;
+using CustomerTestApp.Service.Models;
 
 namespace CustomerTestApp.Service.Services
 {
+    /// <summary>
+    /// The Customer Service class provides the gRPC service implementation for the customers.
+    /// </summary>
     public class CustomerService : CustomerManagement.CustomerManagementBase
     {
         private readonly ICustomerRepository _customerRepository;
@@ -23,17 +24,18 @@ namespace CustomerTestApp.Service.Services
         /// <summary>
         /// This method returns all customers from the database.
         /// </summary>
-        /// <param name="request">This is an empty request</param>
+        /// <param name="request">The filter applied for getting the customers.</param>
         /// <param name="responseStream">This is the response stream having the customer object</param>
         /// <param name="context">This is the server call context</param>
         /// <returns></returns>
-        public override async Task GetAllCustomers(Empty request, IServerStreamWriter<Customer> responseStream, ServerCallContext context)
+        public override async Task GetAllCustomers(CustomerFilter request, IServerStreamWriter<CustomerModel> responseStream, ServerCallContext context)
         {
             try
             {
-                await foreach (var customer in _customerRepository.GetAllCustomersAsync())
+                var cancellationToken = context.CancellationToken;
+                await foreach (var customer in _customerRepository.GetFilteredCustomersAsync(request.FilterType, request.SearchText, cancellationToken))
                 {
-                    var customerMessage = new Customer
+                    var customerMessage = new CustomerModel
                     {
                         Id = customer.Id,
                         FirstName = customer.FirstName,
@@ -55,18 +57,17 @@ namespace CustomerTestApp.Service.Services
             }
         }
 
-
         /// <summary>
         /// This method adds a customer to the database.
         /// </summary>
         /// <param name="request">Request with customer information</param>
         /// <param name="context">This is the server call context</param>
         /// <returns></returns>
-        public override async Task<CustomerResponse> AddCustomer(Customer request, ServerCallContext context)
+        public override async Task<CustomerResponse> AddCustomer(CustomerModel request, ServerCallContext context)
         {
             try
             {
-                var customer = new Models.Customer
+                var customer = new Customer
                 {
                     FirstName = request.FirstName,
                     LastName = request.LastName,
@@ -93,11 +94,11 @@ namespace CustomerTestApp.Service.Services
         /// <param name="request">Request with customer information.</param>
         /// <param name="context">This is the server call context</param>
         /// <returns></returns>
-        public override async Task<CustomerResponse> UpdateCustomer(Customer request, ServerCallContext context)
+        public override async Task<CustomerResponse> UpdateCustomer(CustomerModel request, ServerCallContext context)
         {
             try
             {
-                var customer = new Models.Customer
+                var customer = new Customer
                 {
                     Id = request.Id,
                     FirstName = request.FirstName,

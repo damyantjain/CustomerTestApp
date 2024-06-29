@@ -1,8 +1,13 @@
 ﻿using CustomerTestApp.Service.Exceptions;
 using CustomerTestApp.Service.Models;
+using Microsoft.EntityFrameworkCore;
+using System.Runtime.CompilerServices;
 
 namespace CustomerTestApp.Service.Repositories
 {
+    /// <summary>
+    /// The Customer Repository class is responsible for handling the customer data with the database.
+    /// </summary>
     public class CustomerRepository : ICustomerRepository
     {
         private readonly CustomerContext _context;
@@ -14,13 +19,49 @@ namespace CustomerTestApp.Service.Repositories
             _context = context;
         }
 
-        public async IAsyncEnumerable<Models.Customer> GetAllCustomersAsync()
+        private IQueryable<Customer> GetFilteredQuery(FilterType filterType, string searchText)
         {
-            var enumerator = _context.Customers.AsAsyncEnumerable().GetAsyncEnumerator();
+            var query = _context.Customers.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(searchText))
+            {
+                switch (filterType)
+                {
+                    case FilterType.Name:
+                        query = query.Where(x => (x.FirstName + " " + x.LastName).ToLower().Contains(searchText) ||
+                                                 x.FirstName.ToLower().Contains(searchText) ||
+                                                 x.LastName.ToLower().Contains(searchText));
+                        break;
+                    case FilterType.Email:
+                        query = query.Where(x => x.Email.ToLower().Contains(searchText));
+                        break;
+                    case FilterType.All:
+                        query = query.Where(x => (x.FirstName + " " + x.LastName).ToLower().Contains(searchText) ||
+                                                 x.FirstName.ToLower().Contains(searchText) ||
+                                                 x.LastName.ToLower().Contains(searchText) ||
+                                                 x.Email.ToLower().Contains(searchText));
+                        break;
+                }
+            }
+
+            return query;
+        }
+
+        public async IAsyncEnumerable<Customer> GetFilteredCustomersAsync(FilterType filterType, string searchText, [EnumeratorCancellation] CancellationToken cancellationToken)
+        {
+            var query = _context.Customers.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(searchText))
+            {
+                searchText = searchText.Trim().ToLower();
+                query = GetFilteredQuery(filterType, searchText);
+            }
+
+            var enumerator = query.AsAsyncEnumerable().GetAsyncEnumerator(cancellationToken);
 
             while (true)
             {
-                Models.Customer current;
+                Customer current;
                 try
                 {
                     if (!await enumerator.MoveNextAsync())
@@ -31,7 +72,7 @@ namespace CustomerTestApp.Service.Repositories
                 }
                 catch (Exception ex)
                 {
-                    throw new RepositoryException("An error occurred while retrieving customers.", ex);
+                    throw new RepositoryException("An error occurred while retrieving filtered customers.", ex);
                 }
 
                 yield return current;
@@ -40,7 +81,8 @@ namespace CustomerTestApp.Service.Repositories
             await enumerator.DisposeAsync();
         }
 
-        public async Task AddCustomerAsync(Models.Customer customer)
+
+        public async Task AddCustomerAsync(Customer customer)
         {
             try
             {
@@ -56,7 +98,7 @@ namespace CustomerTestApp.Service.Repositories
             }
         }
 
-        public async Task UpdateCustomerAsync(Models.Customer customer)
+        public async Task UpdateCustomerAsync(Customer customer)
         {
             try
             {

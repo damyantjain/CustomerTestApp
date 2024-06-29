@@ -2,9 +2,13 @@
 using Grpc.Core;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Configuration;
+using System.Runtime.CompilerServices;
 
 namespace CustomerTestApp.WPF.Services
 {
+    /// <summary>
+    /// The Customer Service class handles the gRPC calls to the server for customers.
+    /// </summary>
     public class CustomerService : ICustomerService
     {
         private readonly CustomerManagement.CustomerManagementClient _client;
@@ -16,15 +20,22 @@ namespace CustomerTestApp.WPF.Services
             _client = new CustomerManagement.CustomerManagementClient(channel);
         }
 
-        public async IAsyncEnumerable<Customer> GetAllCustomers()
+        public async IAsyncEnumerable<CustomerModel> GetAllCustomersAsync(FilterType filterType, string searchText, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            using var streamCall = _client.GetAllCustomers(new Empty());
-            await foreach (var customer in streamCall.ResponseStream.ReadAllAsync())
+            var request = new CustomerFilter
+            {
+                FilterType = filterType,
+                SearchText = searchText
+            };
+
+            using var call = _client.GetAllCustomers(request, cancellationToken: cancellationToken);
+            await foreach (var customer in call.ResponseStream.ReadAllAsync())
             {
                 yield return customer;
             }
         }
-        public async Task<CustomerResponse> AddCustomerAsync(Customer customer)
+
+        public async Task<CustomerResponse> AddCustomerAsync(CustomerModel customer)
         {
             try
             {
@@ -39,7 +50,8 @@ namespace CustomerTestApp.WPF.Services
                 return new CustomerResponse { Status = Service.Status.Error, Message = $"An error occurred: {ex.Message}" };
             }
         }
-        public async Task<CustomerResponse> UpdateCustomerAsync(Customer customer)
+
+        public async Task<CustomerResponse> UpdateCustomerAsync(CustomerModel customer)
         {
             try
             {
