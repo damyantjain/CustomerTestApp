@@ -1,4 +1,6 @@
-﻿namespace CustomerTestApp.Service.Repositories
+﻿using System.Runtime.CompilerServices;
+
+namespace CustomerTestApp.Service.Repositories
 {
     public interface ICustomerRepository
     {
@@ -8,7 +10,7 @@
         /// <param name="filterType">Type of filter applied for getting data.</param>
         /// <param name="searchText">The text applied for the filter.</param>
         /// <returns></returns>
-        IAsyncEnumerable<Models.Customer> GetFilteredCustomersAsync(FilterType filterType, string searchText);
+        IAsyncEnumerable<Models.Customer> GetFilteredCustomersAsync(FilterType filterType, string searchText, CancellationToken cancellationToken);
 
         /// <summary>
         /// Add a customer to the database.

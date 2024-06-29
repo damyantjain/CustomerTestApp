@@ -19,13 +19,17 @@ namespace CustomerTestApp.WPF.ViewModels
 
         private readonly ICustomerService _customerService;
 
+        private readonly Timer _searchDelayTimer;
+
         private Customer _selectedCustomer;
 
         private string _searchText;
 
         private FilterType _selectedFilter;
 
-        private ObservableCollection<Models.Customer> _filteredCustomerList;
+        private CancellationTokenSource _cancellationTokenSource;
+
+        private ObservableCollection<Customer> _filteredCustomerList;
 
         #endregion
 
@@ -84,8 +88,8 @@ namespace CustomerTestApp.WPF.ViewModels
             {
                 _searchText = value;
                 OnPropertyChanged(nameof(SearchText));
-                //ApplyFilter();
-                _ = LoadCustomers();
+                //_searchDelayTimer.Change(500, Timeout.Infinite);
+                _ = LoadCustomersAsync();
             }
         }
 
@@ -100,7 +104,7 @@ namespace CustomerTestApp.WPF.ViewModels
                 _selectedFilter = value;
                 OnPropertyChanged(nameof(SelectedFilter));
                 //ApplyFilter();
-                _ = LoadCustomers();
+                _ = LoadCustomersAsync();
             }
         }
 
@@ -114,7 +118,9 @@ namespace CustomerTestApp.WPF.ViewModels
             _customerService = customerService;
             CustomerList = new ObservableCollection<Customer>();
             FilteredCustomerList = new ObservableCollection<Customer>();
+           // _searchDelayTimer = new Timer(OnDebounceTimerElapsed);
             SearchText = "";
+            //_ = LoadCustomersAsync();
             NewCustomerCommand = new RelayCommand(CreateNewCustomer);
             RemoveCustomerCommand = new RelayCommand<Customer>(RemoveCustomer);
             Messenger.Instance.Register<SaveCustomerMessage>(async m => await SaveCustomer(m.Customer));
@@ -131,10 +137,14 @@ namespace CustomerTestApp.WPF.ViewModels
         /// <summary>
         /// The LoadCustomers method loads the customers into the customer list.
         /// </summary>
-        private async Task LoadCustomers()
+        private async Task LoadCustomersAsync()
         {
+            _cancellationTokenSource?.Cancel();
+            _cancellationTokenSource = new CancellationTokenSource();
+            var token = _cancellationTokenSource.Token;
+
             FilteredCustomerList.Clear();
-            await foreach (var customer in _customerService.GetAllCustomersAsync(SelectedFilter, SearchText))
+            await foreach (var customer in _customerService.GetAllCustomersAsync(SelectedFilter, SearchText, token).WithCancellation(token))
             {
                 FilteredCustomerList.Add(new Customer
                 {
@@ -178,7 +188,7 @@ namespace CustomerTestApp.WPF.ViewModels
 
             if (response.Status == Status.Success)
             {
-                await LoadCustomers();
+                await LoadCustomersAsync();
             }
             else
             {
@@ -202,7 +212,7 @@ namespace CustomerTestApp.WPF.ViewModels
 
             if (response.Status == Status.Success)
             {
-                await LoadCustomers();
+                await LoadCustomersAsync();
             }
             else
             {
@@ -234,7 +244,7 @@ namespace CustomerTestApp.WPF.ViewModels
 
                     if (response.Status == Status.Success)
                     {
-                        await LoadCustomers();
+                        await LoadCustomersAsync();
                     }
                     else
                     {
@@ -243,6 +253,11 @@ namespace CustomerTestApp.WPF.ViewModels
                 }
             }
         }
+
+        //private void OnDebounceTimerElapsed(object state)
+        //{
+        //    _ = LoadCustomersAsync();
+        //}
 
         //private void ApplyFilter()
         //{

@@ -11,7 +11,7 @@ namespace CustomerTestApp.WPF.Services
         /// This returns all customers from the database.
         /// </summary>
         /// <returns>returns all customers from the database</returns>
-        IAsyncEnumerable<CustomerModel> GetAllCustomersAsync(FilterType filterType, string searchText);
+        IAsyncEnumerable<CustomerModel> GetAllCustomersAsync(FilterType filterType, string searchText, CancellationToken cancellationToken);
 
         /// <summary>
         /// This adds a customer to the database.

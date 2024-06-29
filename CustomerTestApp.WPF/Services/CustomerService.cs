@@ -2,6 +2,7 @@
 using Grpc.Core;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Configuration;
+using System.Runtime.CompilerServices;
 
 namespace CustomerTestApp.WPF.Services
 {
@@ -19,7 +20,7 @@ namespace CustomerTestApp.WPF.Services
             _client = new CustomerManagement.CustomerManagementClient(channel);
         }
 
-        public async IAsyncEnumerable<CustomerModel> GetAllCustomersAsync(FilterType filterType, string searchText)
+        public async IAsyncEnumerable<CustomerModel> GetAllCustomersAsync(FilterType filterType, string searchText, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var request = new CustomerFilter
             {
@@ -27,7 +28,7 @@ namespace CustomerTestApp.WPF.Services
                 SearchText = searchText
             };
 
-            using var call = _client.GetAllCustomers(request);
+            using var call = _client.GetAllCustomers(request, cancellationToken: cancellationToken);
             await foreach (var customer in call.ResponseStream.ReadAllAsync())
             {
                 yield return customer;

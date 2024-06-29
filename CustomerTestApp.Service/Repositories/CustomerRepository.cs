@@ -1,6 +1,7 @@
 ﻿using CustomerTestApp.Service.Exceptions;
 using CustomerTestApp.Service.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Runtime.CompilerServices;
 
 namespace CustomerTestApp.Service.Repositories
 {
@@ -46,7 +47,7 @@ namespace CustomerTestApp.Service.Repositories
             return query;
         }
 
-        public async IAsyncEnumerable<Customer> GetFilteredCustomersAsync(FilterType filterType, string searchText)
+        public async IAsyncEnumerable<Customer> GetFilteredCustomersAsync(FilterType filterType, string searchText, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var query = _context.Customers.AsQueryable();
 
@@ -56,7 +57,7 @@ namespace CustomerTestApp.Service.Repositories
                 query = GetFilteredQuery(filterType, searchText);
             }
 
-            var enumerator = query.AsAsyncEnumerable().GetAsyncEnumerator();
+            var enumerator = query.AsAsyncEnumerable().GetAsyncEnumerator(cancellationToken);
 
             while (true)
             {

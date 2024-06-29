@@ -32,7 +32,8 @@ namespace CustomerTestApp.Service.Services
         {
             try
             {
-                await foreach (var customer in _customerRepository.GetFilteredCustomersAsync(request.FilterType, request.SearchText))
+                var cancellationToken = context.CancellationToken;
+                await foreach (var customer in _customerRepository.GetFilteredCustomersAsync(request.FilterType, request.SearchText, cancellationToken))
                 {
                     var customerMessage = new CustomerModel
                     {
