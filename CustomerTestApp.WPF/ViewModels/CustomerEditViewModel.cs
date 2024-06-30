@@ -5,6 +5,7 @@ using CustomerTestApp.WPF.Messages;
 using CustomerTestApp.WPF.Models;
 using System.Collections;
 using System.ComponentModel;
+using System.Text.RegularExpressions;
 
 namespace CustomerTestApp.WPF.ViewModels
 {
@@ -258,7 +259,17 @@ namespace CustomerTestApp.WPF.ViewModels
             {
                 _validationHelper.AddError(nameof(Email), "Email is required.");
             }
+            else if (!IsValidEmail(Email))
+            {
+                _validationHelper.AddError(nameof(Email), "Invalid email format.");
+            }
             EmailError = GetErrors(nameof(Email)).Cast<string>()?.FirstOrDefault() ?? "";
+        }
+
+        private bool IsValidEmail(string email)
+        {
+            var emailPattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+            return Regex.IsMatch(email, emailPattern);
         }
 
         private void ValidateDiscount()
