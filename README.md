@@ -15,7 +15,7 @@ The Customer Test Application is a WPF-based client for managing customers, util
 ### Frontend
 - **WPF (Windows Presentation Foundation)**: Used for building the user interface.
 - **MVVM (Model-View-ViewModel) Pattern**: Ensures separation of concerns.
-- -**Messenger**: Used for communication between View Models
+- **Messenger**: Used for communication between View Models
 - **gRPC**: For communication with the backend service.
 
 ### Backend
