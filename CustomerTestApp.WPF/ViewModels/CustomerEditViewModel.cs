@@ -27,6 +27,14 @@ namespace CustomerTestApp.WPF.ViewModels
 
         private string _discount;
 
+        private string _firstNameError;
+
+        private string _lastNameError;
+
+        private string _emailError;
+
+        private string _discountError;
+
         #endregion
 
         #region Public Properties
@@ -113,6 +121,58 @@ namespace CustomerTestApp.WPF.ViewModels
         }
 
         /// <summary>
+        /// THe error message for the first name.
+        /// </summary>
+        public string FirstNameError
+        {
+            get => _firstNameError;
+            set
+            {
+                _firstNameError = value;
+                OnPropertyChanged(nameof(FirstNameError));
+            }
+        }
+
+        /// <summary>
+        /// The error message for the last name.
+        /// </summary>
+        public string LastNameError
+        {
+            get => _lastNameError;
+            set
+            {
+                _lastNameError = value;
+                OnPropertyChanged(nameof(LastNameError));
+            }
+        }
+
+        /// <summary>
+        /// The error message for the email.
+        /// </summary>
+        public string EmailError
+        {
+            get => _emailError;
+            set
+            {
+                _emailError = value;
+                OnPropertyChanged(nameof(EmailError));
+            }
+        }
+
+        /// <summary>
+        /// The error message for the discount.
+        /// </summary>
+        public string DiscountError
+        {
+            get => _discountError;
+            set
+            {
+                _discountError = value;
+                OnPropertyChanged(nameof(DiscountError));
+            }
+        }
+
+        /// <summary>
         /// Boolean to determine if the user data can be saved
         /// </summary>
         public bool CanSave => !HasErrors;
@@ -178,6 +238,7 @@ namespace CustomerTestApp.WPF.ViewModels
             {
                 _validationHelper.AddError(nameof(FirstName), "First Name is required.");
             }
+            FirstNameError = GetErrors(nameof(FirstName)).Cast<string>()?.FirstOrDefault() ?? "";
         }
 
         private void ValidateLastName()
@@ -187,6 +248,7 @@ namespace CustomerTestApp.WPF.ViewModels
             {
                 _validationHelper.AddError(nameof(LastName), "Last Name is required.");
             }
+            LastNameError = GetErrors(nameof(LastName)).Cast<string>()?.FirstOrDefault() ?? "";
         }
 
         private void ValidateEmail()
@@ -196,6 +258,7 @@ namespace CustomerTestApp.WPF.ViewModels
             {
                 _validationHelper.AddError(nameof(Email), "Email is required.");
             }
+            EmailError = GetErrors(nameof(Email)).Cast<string>()?.FirstOrDefault() ?? "";
         }
 
         private void ValidateDiscount()
@@ -203,8 +266,9 @@ namespace CustomerTestApp.WPF.ViewModels
             _validationHelper.ClearErrors(nameof(Discount));
             if(string.IsNullOrEmpty(Discount) || !int.TryParse(Discount, out var discountValue) || discountValue < 0 || discountValue > 30)
             {
-                _validationHelper.AddError(nameof(Discount), "Discount must be between 0 and 30.");
+                _validationHelper.AddError(nameof(Discount), "Discount must be between 0 and 30 both included.");
             }
+            DiscountError = GetErrors(nameof(Discount)).Cast<string>()?.FirstOrDefault() ?? "";
         }
 
         #endregion
