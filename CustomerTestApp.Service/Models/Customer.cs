@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CustomerTestApp.Service.Models
 {
@@ -12,8 +11,7 @@ namespace CustomerTestApp.Service.Models
         /// The Id of the customer.
         /// </summary>
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// The first name of the customer.

@@ -41,7 +41,7 @@ namespace CustomerTestApp.Service.Services
                 {
                     var customerMessage = new CustomerModel
                     {
-                        Id = customer.Id,
+                        Id = customer.Id.ToString(),
                         FirstName = customer.FirstName,
                         LastName = customer.LastName,
                         Email = customer.Email,
@@ -74,6 +74,7 @@ namespace CustomerTestApp.Service.Services
                 _logger.LogInformation("Adding a new customer: {FirstName} {LastName}", request.FirstName, request.LastName);
                 var customer = new Customer
                 {
+                    Id = Guid.NewGuid(),
                     FirstName = request.FirstName,
                     LastName = request.LastName,
                     Email = request.Email,
@@ -109,7 +110,7 @@ namespace CustomerTestApp.Service.Services
 
                 var customer = new Customer
                 {
-                    Id = request.Id,
+                    Id = Guid.Parse(request.Id),
                     FirstName = request.FirstName,
                     LastName = request.LastName,
                     Email = request.Email,
@@ -143,7 +144,7 @@ namespace CustomerTestApp.Service.Services
             try
             {
                 _logger.LogInformation("Deleting customer having Id - {Id}", request.Id);
-                await _customerRepository.DeleteCustomerAsync(request.Id);
+                await _customerRepository.DeleteCustomerAsync(Guid.Parse(request.Id));
                 return new CustomerResponse { Status = Status.Success, Message = "Customer deleted successfully." };
             }
             catch (RepositoryException ex)

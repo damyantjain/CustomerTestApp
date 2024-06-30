@@ -8,7 +8,7 @@
         /// <summary>
         /// The Id of the customer.
         /// </summary>
-        public int Id { get; set; }
+        public Guid? Id { get; set; }
 
         /// <summary>
         /// The first name of the customer.
