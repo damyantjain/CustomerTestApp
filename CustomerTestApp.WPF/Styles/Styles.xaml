@@ -2,8 +2,15 @@
 
 
     <!--  Colors  -->
-
     <SolidColorBrush x:Key="MetallicBlack" Color="#2b2b2b" />
+    <SolidColorBrush x:Key="Red" Color="Red" />
+    <SolidColorBrush x:Key="LightGray" Color="LightGray" />
+    <SolidColorBrush x:Key="PureBlack" Color="Black" />
+    <SolidColorBrush x:Key="LightPink" Color="LightPink" />
+    <SolidColorBrush x:Key="LightGreen" Color="#adde49" />
+    <SolidColorBrush x:Key="LightBlue" Color="#d0e5f7" />
+    <SolidColorBrush x:Key="WhiteSmoke" Color="WhiteSmoke" />
+    <SolidColorBrush x:Key="Gray" Color="Gray" />
 
     <!--  ListBox  -->
     <Style x:Key="ListBoxStyle" TargetType="ListBox">
@@ -19,6 +26,12 @@
         <Setter Property="FontWeight" Value="Bold" />
     </Style>
 
+    <!--  Form Error Message  -->
+    <Style x:Key="FormErrorMessage" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Foreground" Value="{StaticResource Red}" />
+    </Style>
+
     <!--  Metallic Black Text  -->
     <Style x:Key="MetallicTextStyle" TargetType="TextBlock">
         <Setter Property="FontSize" Value="14" />
@@ -27,9 +40,9 @@
 
     <!--  Generic TextBox  -->
     <Style x:Key="GenericTextBox" TargetType="TextBox">
-        <Setter Property="Margin" Value="0,5,0,10" />
+        <Setter Property="Margin" Value="0,5,0,0" />
         <Setter Property="Padding" Value="5" />
-        <Setter Property="BorderBrush" Value="LightGray" />
+        <Setter Property="BorderBrush" Value="{StaticResource LightGray}" />
         <Setter Property="BorderThickness" Value="1" />
     </Style>
 
@@ -38,7 +51,8 @@
         x:Key="ReadOnlyTextBox"
         BasedOn="{StaticResource GenericTextBox}"
         TargetType="TextBox">
-        <Setter Property="Background" Value="LightGray" />
+        <Setter Property="Margin" Value="0,5,0,5" />
+        <Setter Property="Background" Value="{StaticResource LightGray}" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="IsReadOnly" Value="True" />
     </Style>
@@ -47,8 +61,8 @@
     <Style x:Key="BorderStyle" TargetType="Border">
         <Setter Property="Margin" Value="5" />
         <Setter Property="Padding" Value="10" />
-        <Setter Property="Background" Value="WhiteSmoke" />
-        <Setter Property="BorderBrush" Value="Gray" />
+        <Setter Property="Background" Value="{StaticResource WhiteSmoke}" />
+        <Setter Property="BorderBrush" Value="{StaticResource Gray}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="CornerRadius" Value="5" />
     </Style>
@@ -61,8 +75,8 @@
         <Setter Property="Height" Value="30" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="VerticalAlignment" Value="Bottom" />
-        <Setter Property="Background" Value="AliceBlue" />
-        <Setter Property="Foreground" Value="Black" />
+        <Setter Property="Background" Value="{StaticResource LightBlue}" />
+        <Setter Property="Foreground" Value="{StaticResource PureBlack}" />
     </Style>
 
     <!--  Save Button  -->
@@ -70,8 +84,8 @@
         x:Key="SaveButtonStyle"
         BasedOn="{StaticResource GenericButtonStyle}"
         TargetType="Button">
-        <Setter Property="Background" Value="YellowGreen" />
-        <Setter Property="Foreground" Value="Black" />
+        <Setter Property="Background" Value="{StaticResource LightGreen}" />
+        <Setter Property="Foreground" Value="{StaticResource PureBlack}" />
     </Style>
 
     <!--  Delete Button  -->
@@ -79,15 +93,15 @@
         x:Key="DeleteButtonStyle"
         BasedOn="{StaticResource GenericButtonStyle}"
         TargetType="Button">
-        <Setter Property="Background" Value="LightPink" />
-        <Setter Property="Foreground" Value="Black" />
+        <Setter Property="Background" Value="{StaticResource LightPink}" />
+        <Setter Property="Foreground" Value="{StaticResource PureBlack}" />
     </Style>
 
     <!--  Generic ComboBox Style  -->
     <Style x:Key="GenericComboBox" TargetType="ComboBox">
         <Setter Property="Margin" Value="5" />
         <Setter Property="Padding" Value="5" />
-        <Setter Property="BorderBrush" Value="LightGray" />
+        <Setter Property="BorderBrush" Value="{StaticResource LightGray}" />
         <Setter Property="BorderThickness" Value="1" />
     </Style>
 

@@ -14,14 +14,23 @@
             <StackPanel Margin="10" Visibility="{Binding IsCustomerSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <TextBlock Style="{StaticResource FieldTextStyle}" Text="Customer ID:" />
                 <TextBox Style="{StaticResource ReadOnlyTextBox}" Text="{Binding Id, Mode=OneWay}" />
+
                 <TextBlock Style="{StaticResource FieldTextStyle}" Text="First Name:" />
                 <TextBox Style="{StaticResource GenericTextBox}" Text="{Binding FirstName, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock Style="{StaticResource FormErrorMessage}" Text="{Binding FirstNameError}" />
+
                 <TextBlock Style="{StaticResource FieldTextStyle}" Text="Last Name:" />
                 <TextBox Style="{StaticResource GenericTextBox}" Text="{Binding LastName, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock Style="{StaticResource FormErrorMessage}" Text="{Binding LastNameError}" />
+
                 <TextBlock Style="{StaticResource FieldTextStyle}" Text="Email:" />
                 <TextBox Style="{StaticResource GenericTextBox}" Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock Style="{StaticResource FormErrorMessage}" Text="{Binding EmailError}" />
+
                 <TextBlock Style="{StaticResource FieldTextStyle}" Text="Discount:" />
                 <TextBox Style="{StaticResource GenericTextBox}" Text="{Binding Discount, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock Style="{StaticResource FormErrorMessage}" Text="{Binding DiscountError}" />
+
                 <Button
                     Command="{Binding SaveCustomerCommand}"
                     Content="Save"

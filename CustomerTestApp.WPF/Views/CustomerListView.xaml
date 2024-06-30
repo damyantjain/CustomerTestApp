@@ -98,7 +98,6 @@
         <Button
             Grid.Row="4"
             Margin="10"
-            Background="AliceBlue"
             Command="{Binding NewCustomerCommand}"
             Content="New Customer"
             Style="{StaticResource GenericButtonStyle}" />
