@@ -5,7 +5,7 @@ option csharp_namespace = "CustomerTestApp.Service";
 package customerService;
 
 message CustomerModel {
-    int32 id = 1;
+    string id = 1;
     string firstName = 2;
     string lastName = 3;
     string email = 4;
@@ -14,7 +14,7 @@ message CustomerModel {
 }
 
 message CustomerId {
-    int32 id = 1;
+    string id = 1;
 }
 
 message Empty {}

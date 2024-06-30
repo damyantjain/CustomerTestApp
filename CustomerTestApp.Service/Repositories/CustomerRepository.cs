@@ -114,7 +114,7 @@ namespace CustomerTestApp.Service.Repositories
             }
         }
 
-        public async Task DeleteCustomerAsync(int id)
+        public async Task DeleteCustomerAsync(Guid id)
         {
             try
             {

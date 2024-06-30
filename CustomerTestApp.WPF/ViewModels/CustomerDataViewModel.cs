@@ -19,8 +19,6 @@ namespace CustomerTestApp.WPF.ViewModels
 
         private readonly ICustomerService _customerService;
 
-        private readonly Timer _searchDelayTimer;
-
         private Customer _selectedCustomer;
 
         private string _searchText;
@@ -144,7 +142,7 @@ namespace CustomerTestApp.WPF.ViewModels
             {
                 FilteredCustomerList.Add(new Customer
                 {
-                    Id = customer.Id,
+                    Id = Guid.Parse(customer.Id),
                     FirstName = customer.FirstName,
                     LastName = customer.LastName,
                     Email = customer.Email,
@@ -156,7 +154,7 @@ namespace CustomerTestApp.WPF.ViewModels
 
         private async Task SaveCustomer(Customer customer)
         {
-            if (customer.Id == 0)
+            if (customer.Id == null)
             {
                 await AddNewCustomer(customer);
             }
@@ -194,7 +192,7 @@ namespace CustomerTestApp.WPF.ViewModels
         {
             var updatedCustomer = new CustomerModel
             {
-                Id = customer.Id,
+                Id = customer.Id.ToString(),
                 FirstName = customer.FirstName,
                 LastName = customer.LastName,
                 Email = customer.Email,
@@ -216,13 +214,13 @@ namespace CustomerTestApp.WPF.ViewModels
 
         private async void RemoveCustomer(Customer customer)
         {
-            if (customer != null)
+            if (customer != null && customer.Id.HasValue)
             {
                 var result = MessageBox.Show($"Are you sure you want to delete {customer.FirstName} {customer.LastName}?", "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning);
                 if (result == MessageBoxResult.Yes)
                 {
                     SelectedCustomer = null;
-                    var response = await _customerService.DeleteCustomerAsync(customer.Id);
+                    var response = await _customerService.DeleteCustomerAsync(customer.Id.Value);
 
                     if (response.Status == Status.Success)
                     {

@@ -32,6 +32,6 @@ namespace CustomerTestApp.WPF.Services
         /// </summary>
         /// <param name="customerId">Id of the customer to be deleted.</param>
         /// <returns></returns>
-        Task<CustomerResponse> DeleteCustomerAsync(int customerId);
+        Task<CustomerResponse> DeleteCustomerAsync(Guid customerId);
     }
 }

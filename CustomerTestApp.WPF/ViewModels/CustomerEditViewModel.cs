@@ -54,7 +54,7 @@ namespace CustomerTestApp.WPF.ViewModels
         /// <summary>
         /// The Id of the customer.
         /// </summary>
-        public int Id => EditableCustomer?.Id ?? 0;
+        public string Id => EditableCustomer?.Id?.ToString() ?? string.Empty;
 
         /// <summary>
         /// The first name of the Customer.

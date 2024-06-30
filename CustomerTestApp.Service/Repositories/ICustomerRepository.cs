@@ -29,6 +29,6 @@
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task DeleteCustomerAsync(int id);
+        Task DeleteCustomerAsync(Guid id);
     }
 }

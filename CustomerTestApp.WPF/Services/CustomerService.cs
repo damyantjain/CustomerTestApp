@@ -67,11 +67,11 @@ namespace CustomerTestApp.WPF.Services
             }
         }
 
-        public async Task<CustomerResponse> DeleteCustomerAsync(int customerId)
+        public async Task<CustomerResponse> DeleteCustomerAsync(Guid customerId)
         {
             try
             {
-                var request = new CustomerId { Id = customerId };
+                var request = new CustomerId { Id = customerId.ToString() };
                 return await _client.DeleteCustomerAsync(request);
             }
             catch (RpcException ex)
