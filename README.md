@@ -1,7 +1,7 @@
-# Customer Test Application
+# Customer Application
 
 ## Overview
-The Customer Test Application is a WPF-based client for managing customers, utilizing a gRPC backend service for efficient communication. The application supports CRUD operations (Create, Read, Update, Delete) and real-time filtering of customer data.
+The Customer Application is a WPF-based client for managing customers, utilizing a gRPC backend service for efficient communication. The application supports CRUD operations (Create, Read, Update, Delete) and real-time filtering of customer data.
 
 ## Features
 - Add, update, delete, and list customers.
