@@ -5,7 +5,7 @@ The Customer Application is a WPF-based client for managing customers, utilizing
 
 ## Features
 - Add, update, delete, and list customers.
-- Real-time filtering of customers by name and email.
+- Real-time filtering of customers by name and email. (Using data streaming)
 - Instant customer form validations
 - Responsive and interactive UI with instant feedback.
 - Efficient data handling using gRPC streaming.
